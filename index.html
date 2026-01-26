@@ -1,4 +1,3 @@
-                
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -17,7 +16,6 @@
         .logo { font-size: 26px; font-weight: 800; color: #00d4ff; text-transform: uppercase; }
         .logo span { color: white; }
         
-        /* Grid Estilo Profissional */
         .main-menu { 
             display: grid; 
             grid-template-columns: 1.5fr 1fr 1fr; 
@@ -32,23 +30,23 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .menu-item:hover { background: #b00020; transform: scale(1.03); border-color: gold; }
-        .menu-item i { font-size: 45px; margin-bottom: 10px; color: white; }
+        .menu-item i { font-size: 45px; margin-bottom: 10px; }
         .menu-item span { font-size: 16px; font-weight: bold; text-transform: uppercase; }
 
         .live { grid-row: span 2; background: #800000; } 
         
-        /* Estilo da Grade de Capas */
+        /* Grid de Capas Reais */
         #content-viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05010a; z-index: 2000; overflow-y: auto; padding: 20px; }
         .grid-capas { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-        .capa-card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; text-align: center; }
-        .capa-card img { width: 100%; height: 190px; object-fit: cover; }
-        .capa-card div { padding: 5px; font-size: 12px; }
+        .capa-card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; cursor: pointer; }
+        .capa-card:hover { border-color: gold; }
+        .capa-card img { width: 100%; height: 190px; object-fit: cover; background: #222; }
+        .capa-card div { padding: 8px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Modais */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; }
         .modal-content { background: #222; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px; border: 1px solid #b00020; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; }
         .btn { width: 100%; padding: 12px; background: #b00020; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; }
     </style>
 </head>
 <body>
@@ -56,44 +54,17 @@
 <div class="container">
     <div class="header">
         <div class="logo">4K<span> IPTV</span> PLAYER</div>
-        <div id="status-info" style="font-size: 11px; color: #888;">Current playlist expires: unlimited</div>
+        <div style="font-size: 11px; color: #888;">Playlist: <span id="pl-status" style="color:red">OFFLINE</span></div>
     </div>
 
     <div class="main-menu">
-        <div class="menu-item live" onclick="abrirPlayer('TV')">
-            <i class="fas fa-tv"></i>
-            <span>Live</span>
-        </div>
-        
-        <div class="menu-item movies" onclick="abrirPlayer('MOVIE')">
-            <i class="fas fa-play-circle"></i>
-            <span>Movies</span>
-        </div>
-
-        <div class="menu-item" onclick="abrirConfig()">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-        </div>
-
-        <div class="menu-item series" onclick="abrirPlayer('SERIES')">
-            <i class="fas fa-list"></i>
-            <span>Series</span>
-        </div>
-
-        <div class="menu-item" onclick="location.reload()">
-            <i class="fas fa-sync-alt"></i>
-            <span>Reload</span>
-        </div>
-
-        <div class="menu-item" onclick="abrirAdd()">
-            <i class="fas fa-user-circle"></i>
-            <span>Account</span>
-        </div>
-
-        <div class="menu-item" style="background: #222;" onclick="alert('Saindo...')">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Exit</span>
-        </div>
+        <div class="menu-item live" onclick="abrirPlayer('TV')"><i class="fas fa-tv"></i><span>Live</span></div>
+        <div class="menu-item movies" onclick="abrirPlayer('MOVIE')"><i class="fas fa-play-circle"></i><span>Movies</span></div>
+        <div class="menu-item" onclick="abrirConfig()"><i class="fas fa-cog"></i><span>Settings</span></div>
+        <div class="menu-item series" onclick="abrirPlayer('SERIES')"><i class="fas fa-list"></i><span>Series</span></div>
+        <div class="menu-item" onclick="location.reload()"><i class="fas fa-sync-alt"></i><span>Reload</span></div>
+        <div class="menu-item" onclick="abrirAdd()"><i class="fas fa-user-circle"></i><span>Account</span></div>
+        <div class="menu-item" style="background: #222;" onclick="window.close()"><i class="fas fa-sign-out-alt"></i><span>Exit</span></div>
     </div>
 </div>
 
@@ -104,60 +75,80 @@
 
 <div id="modalConfig" class="modal">
     <div class="modal-content">
-        <h3>Configurações do App</h3>
-        <p style="font-size: 12px; color: #888; margin-bottom: 10px;">Ajuste as preferências do seu player.</p>
-        <label>Idioma:</label>
-        <select><option>Português (BR)</option><option>English</option></select>
-        <label>Qualidade Padrão:</label>
-        <select><option>Auto (Recomendado)</option><option>4K Ultra HD</option><option>1080p</option></select>
-        <button class="btn" onclick="fecharModais()">SALVAR CONFIGURAÇÕES</button>
+        <h3>Configurações Internas</h3>
+        <button class="btn" onclick="fecharModais()">LIMPAR CACHE</button>
+        <button class="btn" style="background:#444;" onclick="fecharModais()">VOLTAR</button>
     </div>
 </div>
 
 <div id="modalAdd" class="modal">
     <div class="modal-content">
-        <h3>Gerenciar Playlist</h3>
-        <input type="text" id="urlInput" placeholder="URL M3U da sua lista...">
-        <button class="btn" onclick="salvarLista()">SINCRONIZAR AGORA</button>
-        <button class="btn" style="background:#444;" onclick="fecharModais()">VOLTAR</button>
+        <h3>Sincronizar Playlist</h3>
+        <input type="text" id="urlInput" placeholder="URL M3U...">
+        <button class="btn" onclick="salvarLista()">CONECTAR AGORA</button>
     </div>
 </div>
 
 <script>
+    let playlistData = [];
+    const proxy = "https://api.allorigins.win/get?url=";
+
     function abrirConfig() { document.getElementById('modalConfig').style.display='flex'; }
     function abrirAdd() { document.getElementById('modalAdd').style.display='flex'; }
     function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-    
-    function salvarLista() {
+    function fecharViewer() { document.getElementById('content-viewer').style.display = 'none'; }
+
+    async function salvarLista() {
         const url = document.getElementById('urlInput').value;
-        if(url) {
-            localStorage.setItem('playlist_url', url);
-            alert('Lista sincronizada com sucesso!');
-            location.reload();
-        }
+        localStorage.setItem('playlist_url', url);
+        location.reload();
     }
 
-    // Lógica para abrir Filmes/Séries com Capas
+    async function carregarLista() {
+        const url = localStorage.getItem('playlist_url');
+        if(!url) return;
+        document.getElementById('pl-status').innerText = "CONECTANDO...";
+        try {
+            const res = await fetch(proxy + encodeURIComponent(url));
+            const json = await res.json();
+            parsear(json.contents);
+            document.getElementById('pl-status').innerText = "ONLINE";
+            document.getElementById('pl-status').style.color = "#00ff00";
+        } catch(e) { document.getElementById('pl-status').innerText = "ERRO"; }
+    }
+
+    function parsear(data) {
+        const lines = data.split('\n');
+        let obj = null;
+        lines.forEach(l => {
+            if(l.startsWith('#EXTINF:')) {
+                const logo = l.match(/tvg-logo="([^"]+)"/)?.[1] || "";
+                const group = l.match(/group-title="([^"]+)"/)?.[1]?.toUpperCase() || "TV";
+                obj = { name: l.split(',')[1], logo, group };
+            } else if(l.startsWith('http') && obj) {
+                obj.url = l.trim();
+                playlistData.push(obj);
+                obj = null;
+            }
+        });
+    }
+
     function abrirPlayer(tipo) {
         document.getElementById('content-viewer').style.display = 'block';
         const grid = document.getElementById('grid-capas');
-        grid.innerHTML = "<h4>Carregando capas de " + tipo + "...</h4>";
-        
-        // Simulação de carregamento de capas (Aqui entra a lógica de ler o M3U)
-        setTimeout(() => {
-            grid.innerHTML = "";
-            for(let i=1; i<=12; i++) {
-                grid.innerHTML += `
-                    <div class="capa-card">
-                        <img src="https://via.placeholder.com/300x450/1a1a1a/gold?text=CAPA+${i}" alt="Capa">
-                        <div>Exemplo de Filme ${i}</div>
-                    </div>`;
-            }
-        }, 1000);
+        grid.innerHTML = "";
+        const filtrados = playlistData.filter(i => i.group.includes(tipo) || (tipo === 'TV' && !i.group.includes('MOVIE') && !i.group.includes('SERIE')));
+        filtrados.slice(0, 100).forEach(item => {
+            grid.innerHTML += `
+                <div class="capa-card" onclick="play('${item.url}')">
+                    <img src="${item.logo}" onerror="this.src='https://via.placeholder.com/150x200?text=Sinal'">
+                    <div>${item.name}</div>
+                </div>`;
+        });
     }
 
-    function fecharViewer() { document.getElementById('content-viewer').style.display = 'none'; }
+    function play(url) { alert("Iniciando Stream: " + url); }
+    carregarLista();
 </script>
-
 </body>
 </html>
