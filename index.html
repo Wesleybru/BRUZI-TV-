@@ -2,20 +2,79 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>BRUZI+ TV</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRUZI+ TV PRO</title>
     <style>
-        body { background: black; color: gold; text-align: center; font-family: sans-serif; }
-        .aba { padding: 10px; border: 1px solid gold; margin: 5px; cursor: pointer; display: inline-block; }
+        body { margin: 0; background: #05010a; color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
+        header { padding: 15px; background: #000; border-bottom: 2px solid gold; text-align: center; font-weight: bold; font-size: 24px; color: gold; }
+        .nav { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #111; }
+        .nav button { background: #222; border: 1px solid gold; color: white; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #video-container { width: 100%; aspect-ratio: 16/9; background: #000; }
+        video { width: 100%; height: 100%; }
+        .grid { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; padding: 15px; }
+        .card { background: #1a1a1a; border-radius: 5px; text-align: center; font-size: 11px; padding: 5px; border: 1px solid #333; cursor: pointer; }
+        .card:hover { border-color: gold; }
+        .card img { width: 100%; border-radius: 3px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
-    <h1>BRUZI+ TV ONLINE</h1>
-    <div>
-        <div class="aba">CANAIS</div>
-        <div class="aba">FILMES</div>
-        <div class="aba">SÉRIES</div>
+    <header>BRUZI+ TV PRO</header>
+    <div id="video-container">
+        <video id="video" controls autoplay></video>
     </div>
-    <p>Se você vê isso, o site ESTÁ FUNCIONANDO!</p>
+    <div class="nav">
+        <button onclick="render('TV')">CANAIS</button>
+        <button onclick="render('MOVIE')">FILMES</button>
+        <button onclick="render('SERIES')">SÉRIES</button>
+    </div>
+    <div id="catalog" class="grid">Carregando lista...</div>
+
+    <script>
+        // COLOQUE SUA URL ABAIXO:
+        const M3U_URL = "http://dnssp.site:8080/get.php?username=Leandroiptv2&password=SUA_SENHA_AQUI"; 
+        let items = [];
+
+        async function load() {
+            try {
+                // Usando proxy para não dar erro de "Failed to fetch"
+                const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(M3U_URL)}`);
+                const json = await resp.json();
+                parse(json.contents);
+            } catch (e) { document.getElementById('catalog').innerText = "Erro ao carregar lista."; }
+        }
+
+        function parse(data) {
+            const lines = data.split('\n');
+            let current = null;
+            lines.forEach(line => {
+                if (line.startsWith('#EXTINF:')) {
+                    const name = line.split(',')[1];
+                    const logo = line.match(/tvg-logo="([^"]+)"/)?.[1] || "";
+                    const type = line.includes('group-title="') ? line.match(/group-title="([^"]+)"/)?.[1] : "TV";
+                    current = { name, logo, type: type.toUpperCase() };
+                } else if (line.startsWith('http')) {
+                    if (current) { current.url = line; items.push(current); current = null; }
+                }
+            });
+            render('TV');
+        }
+
+        function render(filter) {
+            const container = document.getElementById('catalog');
+            container.innerHTML = "";
+            const filtered = items.filter(i => i.type.includes(filter) || (filter === 'TV' && !i.type.includes('MOVIE') && !i.type.includes('SERIES')));
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `<img src="${item.logo || 'https://via.placeholder.com/100x150?text=TV'}"><div>${item.name}</div>`;
+                div.onclick = () => {
+                    document.getElementById('video').src = item.url;
+                    window.scrollTo(0,0);
+                };
+                container.appendChild(div);
+            });
+        }
+        load();
+    </script>
 </body>
 </html>
