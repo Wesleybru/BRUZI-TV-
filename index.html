@@ -1,80 +1,108 @@
-<!DOCTYPE html>
+                <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRUZI+ TV PRO</title>
+    <title>BRUZI+ 4K PLAYER</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { margin: 0; background: #05010a; color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
-        header { padding: 15px; background: #000; border-bottom: 2px solid gold; text-align: center; font-weight: bold; font-size: 24px; color: gold; }
-        .nav { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #111; }
-        .nav button { background: #222; border: 1px solid gold; color: white; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        #video-container { width: 100%; aspect-ratio: 16/9; background: #000; }
-        video { width: 100%; height: 100%; }
-        .grid { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; padding: 15px; }
-        .card { background: #1a1a1a; border-radius: 5px; text-align: center; font-size: 11px; padding: 5px; border: 1px solid #333; cursor: pointer; }
-        .card:hover { border-color: gold; }
-        .card img { width: 100%; border-radius: 3px; margin-bottom: 5px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: linear-gradient(135deg, #1a0a2e 0%, #05010a 100%); 
+            color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden;
+        }
+        .container { display: flex; flex-direction: column; height: 100%; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { font-size: 28px; font-weight: 800; color: #00d4ff; text-shadow: 0 0 10px rgba(0,212,255,0.5); }
+        .logo span { color: white; }
+        
+        /* Grid de Botões Estilo App Profissional */
+        .main-menu { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr 1fr; 
+            grid-template-rows: 1fr 1fr; 
+            gap: 15px; flex-grow: 1; max-height: 500px;
+        }
+        .menu-item { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; transition: 0.3s; cursor: pointer;
+        }
+        .menu-item:hover { background: #e91e63; transform: scale(1.02); border-color: white; }
+        .menu-item i { font-size: 50px; margin-bottom: 15px; }
+        .menu-item span { font-size: 18px; font-weight: bold; text-transform: uppercase; }
+
+        /* Botão grande de Live */
+        .live { grid-row: span 2; background: #b00020; }
+        .movies { background: rgba(255,255,255,0.08); }
+        .series { background: rgba(255,255,255,0.08); }
+        
+        .footer-info { margin-top: 20px; font-size: 14px; color: #888; display: flex; justify-content: space-between; }
+        
+        /* Modal para adicionar lista */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #00d4ff; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; }
+        .btn-save { width: 100%; padding: 12px; background: #00d4ff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-    <header>BRUZI+ TV PRO</header>
-    <div id="video-container">
-        <video id="video" controls autoplay></video>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">BRUZI<span>+ 4K</span></div>
+        <div id="status" style="font-size: 12px; color: #00ff00;">Playlist: Ativa</div>
     </div>
-    <div class="nav">
-        <button onclick="render('TV')">CANAIS</button>
-        <button onclick="render('MOVIE')">FILMES</button>
-        <button onclick="render('SERIES')">SÉRIES</button>
+
+    <div class="main-menu">
+        <div class="menu-item live" onclick="window.location.reload()">
+            <i class="fas fa-tv"></i>
+            <span>Live TV</span>
+        </div>
+        <div class="menu-item movies" onclick="alert('Abrindo Filmes...')">
+            <i class="fas fa-film"></i>
+            <span>Movies</span>
+        </div>
+        <div class="menu-item series" onclick="alert('Abrindo Séries...')">
+            <i class="fas fa-layer-group"></i>
+            <span>Series</span>
+        </div>
+        <div class="menu-item" onclick="document.getElementById('modal').style.display='flex'">
+            <i class="fas fa-plus-circle"></i>
+            <span>Add List</span>
+        </div>
+        <div class="menu-item" onclick="location.href='https://github.com/Wesleybru/BRUZI-TV-'">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </div>
     </div>
-    <div id="catalog" class="grid">Carregando lista...</div>
 
-    <script>
-        // COLOQUE SUA URL ABAIXO:
-        const M3U_URL = "http://dnssp.site:8080/get.php?username=Leandroiptv2&password=SUA_SENHA_AQUI"; 
-        let items = [];
+    <div class="footer-info">
+        <div>v3.5 Professional</div>
+        <div id="expire">Expires: Unlimited</div>
+    </div>
+</div>
 
-        async function load() {
-            try {
-                // Usando proxy para não dar erro de "Failed to fetch"
-                const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(M3U_URL)}`);
-                const json = await resp.json();
-                parse(json.contents);
-            } catch (e) { document.getElementById('catalog').innerText = "Erro ao carregar lista."; }
+<div id="modal">
+    <div class="modal-content">
+        <h3>Adicionar Nova Lista</h3>
+        <input type="text" id="urlInput" placeholder="Cole sua URL M3U aqui...">
+        <button class="btn-save" onclick="salvarLista()">SALVAR LISTA</button>
+        <button class="btn-save" style="background:#444; margin-top:10px;" onclick="document.getElementById('modal').style.display='none'">CANCELAR</button>
+    </div>
+</div>
+
+<script>
+    function salvarLista() {
+        const url = document.getElementById('urlInput').value;
+        if(url) {
+            localStorage.setItem('minhaLista', url);
+            alert('Lista salva com sucesso! O player vai carregar.');
+            document.getElementById('modal').style.display = 'none';
         }
+    }
+</script>
 
-        function parse(data) {
-            const lines = data.split('\n');
-            let current = null;
-            lines.forEach(line => {
-                if (line.startsWith('#EXTINF:')) {
-                    const name = line.split(',')[1];
-                    const logo = line.match(/tvg-logo="([^"]+)"/)?.[1] || "";
-                    const type = line.includes('group-title="') ? line.match(/group-title="([^"]+)"/)?.[1] : "TV";
-                    current = { name, logo, type: type.toUpperCase() };
-                } else if (line.startsWith('http')) {
-                    if (current) { current.url = line; items.push(current); current = null; }
-                }
-            });
-            render('TV');
-        }
-
-        function render(filter) {
-            const container = document.getElementById('catalog');
-            container.innerHTML = "";
-            const filtered = items.filter(i => i.type.includes(filter) || (filter === 'TV' && !i.type.includes('MOVIE') && !i.type.includes('SERIES')));
-            filtered.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `<img src="${item.logo || 'https://via.placeholder.com/100x150?text=TV'}"><div>${item.name}</div>`;
-                div.onclick = () => {
-                    document.getElementById('video').src = item.url;
-                    window.scrollTo(0,0);
-                };
-                container.appendChild(div);
-            });
-        }
-        load();
-    </script>
 </body>
 </html>
