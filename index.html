@@ -1,142 +1,216 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>BRUZI+ 📺</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BRUZI+📺</title>
+
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial}
-header{padding:12px;background:#111;display:flex;justify-content:space-between}
-button,input{border:0;border-radius:6px}
-button{background:#b00020;color:#fff;padding:12px;cursor:pointer}
-input{padding:10px;width:100%;margin:6px 0}
-#menu{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:15px}
-.card{background:#1a1a1a;padding:20px;text-align:center;border-radius:12px}
-.card:hover{background:#b00020}
-#viewer{display:none;padding:10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.item{background:#111;border-radius:8px;overflow:hidden}
-.item img{width:100%;height:150px;object-fit:cover}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center}
-.box{background:#111;padding:20px;border-radius:12px;width:90%;max-width:400px}
-video{width:100%;height:100%;background:#000}
+:root{
+  --bg:#0b0b0f;
+  --card:#16161d;
+  --accent:#00e5ff;
+  --btn:#1f1f2a;
+  --text:#ffffff;
+  --live:#00e676;
+  --movie:#ff9100;
+  --series:#ab47bc;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+header{
+  padding:15px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  background:#000;
+  border-bottom:1px solid #222;
+}
+.container{
+  padding:15px;
+}
+.buttons{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+button{
+  background:var(--btn);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:14px;
+  font-size:16px;
+  cursor:pointer;
+}
+button:hover{opacity:.85}
+input[type=file],input[type=text]{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+}
+.list{
+  margin-top:15px;
+}
+.item{
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:8px;
+  background:var(--card);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.item span{
+  font-size:14px;
+}
+.badge{
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:12px;
+}
+.live{background:var(--live);color:#000}
+.movie{background:var(--movie);color:#000}
+.series{background:var(--series);color:#000}
+video{
+  width:100%;
+  margin-top:15px;
+  border-radius:12px;
+  background:#000;
+}
+.hidden{display:none}
 </style>
 </head>
 
 <body>
 
-<header>
-  <b>BRUZI+ 📺</b>
-  <span id="status">OFF</span>
-</header>
+<header>BRUZI+📺</header>
 
-<div id="menu">
-  <div class="card" onclick="openLogin()">Adicionar Lista</div>
-  <div class="card" onclick="show('TV')">Live TV</div>
-  <div class="card" onclick="show('MOVIE')">Movies</div>
-  <div class="card" onclick="show('SERIES')">Series</div>
-  <div class="card" onclick="showFav()">Favoritos</div>
-  <div class="card" onclick="resetAll()">Reset</div>
+<div class="container">
+
+<div class="buttons">
+  <button onclick="show('add')">Adicionar Lista</button>
+  <button onclick="show('live')">Live TV</button>
+  <button onclick="show('movies')">Movies</button>
+  <button onclick="show('series')">Series</button>
+  <button onclick="exportM3U()">Extrair Lista</button>
+  <button onclick="resetAll()">Reset</button>
 </div>
 
-<div id="viewer">
-  <button onclick="viewer.style.display='none'">Voltar</button>
-  <div id="grid" class="grid"></div>
+<!-- ADD LIST -->
+<div id="add" class="hidden">
+  <input type="file" accept=".m3u,.m3u8" onchange="loadFile(this)">
+  <input type="text" placeholder="Ou URL da lista M3U" id="m3uUrl">
+  <button style="margin-top:10px" onclick="loadUrl()">Carregar URL</button>
 </div>
 
-<div id="player" class="modal" onclick="player.style.display='none'"></div>
+<video id="player" controls></video>
 
-<div id="login" class="modal">
-  <div class="box">
-    <h3>Adicionar Lista</h3>
+<div id="list" class="list"></div>
 
-    <p><b>📂 Arquivo M3U (FUNCIONA 100%)</b></p>
-    <input type="file" accept=".m3u,.m3u8" onchange="loadFile(this.files[0])">
-
-    <hr>
-
-    <p><b>XC Login</b></p>
-    <input id="host" placeholder="http://servidor:porta">
-    <input id="user" placeholder="Usuário">
-    <input id="pass" placeholder="Senha">
-
-    <button onclick="loadXC()">ATIVAR</button>
-    <p onclick="login.style.display='none'" style="color:#888">Cancelar</p>
-  </div>
 </div>
 
 <script>
-let canais=[],fav=JSON.parse(localStorage.getItem("fav")||"[]");
+let channels=[];
 
-function openLogin(){login.style.display="flex"}
-function resetAll(){localStorage.clear();location.reload()}
+function show(type){
+  document.getElementById('add').classList.add('hidden');
+  if(type==='add') document.getElementById('add').classList.remove('hidden');
+  render(type);
+}
 
-function parse(data){
-  canais=[];
-  let temp=null;
-  data.split(/\r?\n/).forEach(l=>{
+function loadFile(input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>parseM3U(e.target.result);
+  reader.readAsText(file);
+}
+
+function loadUrl(){
+  const url=document.getElementById('m3uUrl').value;
+  if(!url)return alert('Informe a URL');
+  fetch(url).then(r=>r.text()).then(parseM3U)
+  .catch(()=>alert('Erro ao carregar URL'));
+}
+
+function parseM3U(data){
+  channels=[];
+  const lines=data.split('\n');
+  let current={};
+  lines.forEach(l=>{
     l=l.trim();
-    if(l.startsWith("#EXTINF")){
-      temp={
-        n:l.split(",").pop().trim(),
-        g:(l.match(/group-title="([^"]+)"/i)?.[1]||"TV").toUpperCase(),
-        lg:l.match(/tvg-logo="([^"]+)"/i)?.[1]||"",
-        u:""
-      };
-    }else if(temp && l.startsWith("http")){
-      temp.u=l;
-      canais.push(temp);
-      temp=null;
+    if(l.startsWith('#EXTINF')){
+      const name=l.split(',').pop();
+      const group=(l.match(/group-title="([^"]+)"/)||[])[1]||'Live';
+      current={name,group};
+    }else if(l.startsWith('http')){
+      current.url=l;
+      channels.push(current);
+      current={};
     }
   });
-  status.innerText="ONLINE "+canais.length;
+  localStorage.setItem('bruzi_channels',JSON.stringify(channels));
+  render('live');
 }
 
-function loadFile(file){
-  const r=new FileReader();
-  r.onload=e=>{
-    parse(e.target.result);
-    login.style.display="none";
-  };
-  r.readAsText(file);
-}
-
-function loadXC(){
-  if(!host.value||!user.value||!pass.value) return;
-  fetch(`${host.value}/get.php?username=${user.value}&password=${pass.value}&type=m3u_plus`)
-    .then(r=>r.text())
-    .then(t=>{
-      parse(t);
-      login.style.display="none";
-    })
-    .catch(()=>alert("Servidor bloqueou navegador — use arquivo M3U ou APK"));
-}
-
-function show(tipo){
-  viewer.style.display="block";
-  grid.innerHTML="";
-  canais.filter(c=>c.g.includes(tipo)).slice(0,200).forEach(c=>{
-    grid.innerHTML+=`
-    <div class="item" onclick="play('${c.u}')">
-      <img src="${c.lg}" onerror="this.src='https://via.placeholder.com/150'">
-      <div style="padding:5px">${c.n}</div>
-    </div>`;
+function render(type){
+  const list=document.getElementById('list');
+  list.innerHTML='';
+  const data=JSON.parse(localStorage.getItem('bruzi_channels')||'[]');
+  data.filter(c=>{
+    if(type==='movies')return /movie|filme/i.test(c.group);
+    if(type==='series')return /series/i.test(c.group);
+    if(type==='live')return true;
+    return true;
+  }).forEach(c=>{
+    const div=document.createElement('div');
+    div.className='item';
+    const badgeClass=
+      /movie|filme/i.test(c.group)?'movie':
+      /series/i.test(c.group)?'series':'live';
+    div.innerHTML=`
+      <span>${c.name}</span>
+      <span class="badge ${badgeClass}">${c.group}</span>
+    `;
+    div.onclick=()=>play(c.url);
+    list.appendChild(div);
   });
 }
 
-function play(u){
-  player.style.display="flex";
-  player.innerHTML=`<video src="${u}" controls autoplay></video>`;
+function play(url){
+  const v=document.getElementById('player');
+  v.src=url;
+  v.play();
 }
 
-function showFav(){
-  viewer.style.display="block";
-  grid.innerHTML="";
-  canais.filter(c=>fav.includes(c.n)).forEach(c=>{
-    grid.innerHTML+=`<div class="item">${c.n}</div>`;
+function exportM3U(){
+  if(!channels.length)return alert('Nada para extrair');
+  let m3u='#EXTM3U\n';
+  channels.forEach(c=>{
+    m3u+=`#EXTINF:-1 group-title="${c.group}",${c.name}\n${c.url}\n`;
   });
+  const blob=new Blob([m3u],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='bruzi_extraido.m3u';
+  a.click();
+}
+
+function resetAll(){
+  localStorage.clear();
+  channels=[];
+  document.getElementById('list').innerHTML='';
+  document.getElementById('player').src='';
 }
 </script>
 
 </body>
-</html>
+  </html>
