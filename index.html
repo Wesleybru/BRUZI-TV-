@@ -6,121 +6,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-:root {
+:root{
   --bg:#0d0d12;
   --card:#15151e;
   --pink:#e91e63;
   --green:#00e676;
 }
 
-body {
+body{
   margin:0;
   background:var(--bg);
   color:#fff;
   font-family:Arial,Helvetica,sans-serif;
 }
 
-/* SPLASH */
-#splash {
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--bg);
-  z-index:10;
-}
-
-.logo {
-  padding:30px 40px;
+.app{
+  max-width:460px;
+  margin:20px auto;
+  background:var(--card);
   border-radius:16px;
-  background:#111;
+  padding:20px;
   border:1px solid #222;
-  box-shadow:0 0 40px rgba(233,30,99,.4);
+}
+
+/* LOGO */
+.logo{
   text-align:center;
-  animation:pulse 2s infinite alternate;
+  margin-bottom:20px;
 }
-
-@keyframes pulse {
-  from{box-shadow:0 0 15px rgba(233,30,99,.3)}
-  to{box-shadow:0 0 45px rgba(233,30,99,.7)}
-}
-
-.logo h1 {
+.logo h1{
   margin:0;
-  font-size:34px;
+  font-size:28px;
   letter-spacing:3px;
 }
-
-.logo .bot {color:#fff;}
-.logo .machine {color:var(--pink);}
-.logo .ai {
+.logo .bot{color:#fff;}
+.logo .machine{color:var(--pink);}
+.logo .ai{
   color:var(--green);
   font-size:12px;
   vertical-align:super;
 }
 
-.logo small {
-  display:block;
-  margin-top:8px;
-  color:#888;
-  font-size:10px;
-  letter-spacing:2px;
+/* BOTÕES */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.btn{
+  padding:14px;
+  border-radius:10px;
+  border:1px solid #333;
+  background:#111;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+}
+.btn:active{transform:scale(.96);}
+.btn.live{
+  margin-top:10px;
+  border-color:var(--pink);
+  color:var(--pink);
 }
 
-/* BOT */
-#bot {
-  display:none;
-  max-width:460px;
-  margin:20px auto;
-  background:var(--card);
-  border-radius:14px;
-  padding:20px;
-  border:1px solid #222;
-}
-
-.header {
-  font-weight:900;
-  letter-spacing:2px;
-  margin-bottom:15px;
-}
-
-.monitor {
+/* MONITOR */
+.monitor{
   background:#0a0a0f;
   border-radius:10px;
   padding:15px;
+  margin-top:15px;
   text-align:center;
-  margin-bottom:15px;
 }
-
-#cor {
+#cor{
   font-size:18px;
   font-weight:bold;
 }
 
-.historico {
+/* HISTÓRICO */
+.historico{
   display:flex;
   gap:6px;
   justify-content:center;
   margin-top:10px;
 }
-
-.bola {
+.bola{
   width:22px;
   height:22px;
   border-radius:50%;
-  font-size:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
 }
-
 .red{background:#f44336;}
 .black{background:#333;border:1px solid #444;}
-.white{background:#fff;color:#000;box-shadow:0 0 6px #fff;}
+.white{background:#fff;box-shadow:0 0 6px #fff;}
 
-.resultado {
+/* RESULTADO */
+.resultado{
   margin-top:15px;
   padding:15px;
   border-radius:10px;
@@ -128,47 +107,64 @@ body {
   border:1px solid var(--pink);
   text-align:center;
 }
-
-#hora {
-  font-size:28px;
+#hora{
+  font-size:26px;
   font-weight:900;
-  letter-spacing:2px;
-  margin-top:5px;
+  color:var(--green);
+  margin-top:6px;
+}
+
+/* LISTA */
+.lista{
+  margin-top:15px;
+  background:#0a0a0f;
+  border-radius:10px;
+  padding:12px;
+  border:1px solid #222;
+}
+.lista h4{
+  margin:0 0 8px;
+  font-size:11px;
+  color:#aaa;
+}
+.sinal{
+  font-size:12px;
+  padding:6px 0;
+  border-bottom:1px solid #1a1a1a;
   color:var(--green);
 }
 
-.ai {
+/* IA */
+.ia{
   margin-top:15px;
   text-align:center;
+  font-size:13px;
 }
-
-.ai span {
-  display:inline-block;
-  margin-top:5px;
-  font-size:22px;
-  font-weight:bold;
+.ia span{
   color:var(--pink);
+  font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
+<div class="app">
+
   <div class="logo">
     <h1>
       <span class="bot">BOT</span>
       <span class="machine">MACHINE</span>
       <span class="ai">AI</span>
     </h1>
-    <small>INTELLIGENT SIGNAL SYSTEM</small>
   </div>
-</div>
 
-<!-- BOT -->
-<div id="bot">
-  <div class="header">SINAIS AO VIVO</div>
+  <div class="grid">
+    <button class="btn" onclick="gerarCor()">📊 GERAR COR</button>
+    <button class="btn" onclick="gerarBranco()">🎯 GERAR BRANCO</button>
+  </div>
+
+  <button class="btn live" onclick="toggleLive()">🔴 ATIVAR AO VIVO</button>
 
   <div class="monitor">
     <div id="cor">AGUARDANDO...</div>
@@ -176,40 +172,26 @@ body {
   </div>
 
   <div class="resultado">
-    <div>PRÓXIMO BRANCO</div>
+    PRÓXIMO BRANCO
     <div id="hora">00:00</div>
   </div>
 
-  <div class="ai">
-    IA ATIVA
-    <span id="nivel">99.0</span>
+  <div class="lista">
+    <h4>PRÓXIMOS SINAIS</h4>
+    <div id="lista"></div>
   </div>
+
+  <div class="ia">
+    IA ATIVA <span id="nivel">99.1</span>
+  </div>
+
 </div>
 
 <script>
-/* SPLASH TIMER */
-setTimeout(()=>{
-  document.getElementById('splash').style.display='none';
-  document.getElementById('bot').style.display='block';
-  iniciarLive();
-},2000);
-
-let nivel=99.0;
-const somas=[4,8,12,15,20];
-
-function iniciarLive(){
-  atualizar();
-  setInterval(atualizar,12000);
-}
-
-function atualizar(){
-  gerarCor();
-  gerarBranco();
-  gerarHistorico();
-  nivel+=0.05;
-  if(nivel>100) nivel=100;
-  document.getElementById('nivel').innerText=nivel.toFixed(1);
-}
+let nivel=99.1;
+let live=false;
+let loop=null;
+const somas=[4,8,12,15,20,25];
 
 function gerarCor(){
   const r=Math.random();
@@ -217,14 +199,22 @@ function gerarCor(){
   if(r<0.48) el.innerHTML='🔴 VERMELHO';
   else if(r<0.96) el.innerHTML='⚫ PRETO';
   else el.innerHTML='⚪ BRANCO';
+  gerarHistorico();
+  subirIA();
 }
 
 function gerarBranco(){
-  const d=new Date();
-  d.setMinutes(d.getMinutes()+somas[Math.floor(Math.random()*3)]);
-  document.getElementById('hora').innerText=
-    d.getHours().toString().padStart(2,'0')+':' +
-    d.getMinutes().toString().padStart(2,'0');
+  const base=new Date();
+  const lista=document.getElementById('lista');
+  lista.innerHTML='';
+  for(let i=0;i<5;i++){
+    const d=new Date(base.getTime()+somas[i]*60000);
+    const h=d.getHours().toString().padStart(2,'0')+':'+
+            d.getMinutes().toString().padStart(2,'0');
+    lista.innerHTML+=`<div class="sinal">⚪ Branco às ${h}</div>`;
+    if(i===0) document.getElementById('hora').innerText=h;
+  }
+  subirIA();
 }
 
 function gerarHistorico(){
@@ -234,6 +224,28 @@ function gerarHistorico(){
     const r=Math.random();
     const cor=r<0.46?'red':r<0.92?'black':'white';
     h.innerHTML+=`<div class="bola ${cor}"></div>`;
+  }
+}
+
+function subirIA(){
+  nivel+=0.05;
+  if(nivel>100) nivel=100;
+  document.getElementById('nivel').innerText=nivel.toFixed(1);
+}
+
+function toggleLive(){
+  const btn=document.querySelector('.btn.live');
+  if(!live){
+    live=true;
+    btn.innerText='🟢 AO VIVO ATIVO';
+    loop=setInterval(()=>{
+      gerarCor();
+      gerarBranco();
+    },12000);
+  }else{
+    live=false;
+    btn.innerText='🔴 ATIVAR AO VIVO';
+    clearInterval(loop);
   }
 }
 </script>
