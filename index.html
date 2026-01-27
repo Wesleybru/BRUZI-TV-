@@ -1,216 +1,102 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>BRUZI+📺</title>
+<meta charset="UTF-8">
+<title>BOT MACHINE AI - Logo</title>
 
 <style>
-:root{
-  --bg:#0b0b0f;
-  --card:#16161d;
-  --accent:#00e5ff;
-  --btn:#1f1f2a;
-  --text:#ffffff;
-  --live:#00e676;
-  --movie:#ff9100;
-  --series:#ab47bc;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
-}
-header{
-  padding:15px;
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
-  background:#000;
-  border-bottom:1px solid #222;
-}
-.container{
-  padding:15px;
-}
-.buttons{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
-button{
-  background:var(--btn);
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  padding:14px;
-  font-size:16px;
-  cursor:pointer;
-}
-button:hover{opacity:.85}
-input[type=file],input[type=text]{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border-radius:8px;
-  border:none;
-}
-.list{
-  margin-top:15px;
-}
-.item{
-  padding:10px;
-  border-radius:8px;
-  margin-bottom:8px;
-  background:var(--card);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.item span{
-  font-size:14px;
-}
-.badge{
-  padding:4px 8px;
-  border-radius:6px;
-  font-size:12px;
-}
-.live{background:var(--live);color:#000}
-.movie{background:var(--movie);color:#000}
-.series{background:var(--series);color:#000}
-video{
-  width:100%;
-  margin-top:15px;
-  border-radius:12px;
-  background:#000;
-}
-.hidden{display:none}
+    body {
+        margin: 0;
+        background: #0d0d12;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .logo-container {
+        text-align: center;
+        padding: 30px 40px;
+        border-radius: 16px;
+        background: linear-gradient(145deg, #11111a, #0a0a10);
+        box-shadow: 0 0 40px rgba(233,30,99,0.25);
+        border: 1px solid #222;
+        animation: glow 2.5s infinite alternate;
+    }
+
+    @keyframes glow {
+        from { box-shadow: 0 0 20px rgba(233,30,99,0.3); }
+        to   { box-shadow: 0 0 45px rgba(233,30,99,0.6); }
+    }
+
+    .logo-title {
+        font-size: 42px;
+        font-weight: 900;
+        letter-spacing: 3px;
+    }
+
+    .logo-title .bot {
+        color: #ffffff;
+    }
+
+    .logo-title .machine {
+        color: #e91e63;
+        margin-left: 8px;
+    }
+
+    .logo-ai {
+        display: inline-block;
+        margin-left: 6px;
+        font-size: 14px;
+        color: #00e676;
+        vertical-align: super;
+        font-weight: bold;
+        animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 0.4; }
+        50% { opacity: 1; }
+        100% { opacity: 0.4; }
+    }
+
+    .subtitle {
+        margin-top: 10px;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: #888;
+        text-transform: uppercase;
+    }
+
+    .scan-line {
+        height: 2px;
+        width: 100%;
+        margin-top: 18px;
+        background: linear-gradient(90deg, transparent, #00e676, transparent);
+        animation: scan 2s infinite;
+    }
+
+    @keyframes scan {
+        from { opacity: 0; }
+        50%  { opacity: 1; }
+        to   { opacity: 0; }
+    }
 </style>
 </head>
 
 <body>
 
-<header>BRUZI+📺</header>
+<div class="logo-container">
+    <div class="logo-title">
+        <span class="bot">BOT</span>
+        <span class="machine">MACHINE</span>
+        <span class="logo-ai">AI</span>
+    </div>
 
-<div class="container">
-
-<div class="buttons">
-  <button onclick="show('add')">Adicionar Lista</button>
-  <button onclick="show('live')">Live TV</button>
-  <button onclick="show('movies')">Movies</button>
-  <button onclick="show('series')">Series</button>
-  <button onclick="exportM3U()">Extrair Lista</button>
-  <button onclick="resetAll()">Reset</button>
+    <div class="subtitle">INTELLIGENT SIGNAL SYSTEM</div>
+    <div class="scan-line"></div>
 </div>
-
-<!-- ADD LIST -->
-<div id="add" class="hidden">
-  <input type="file" accept=".m3u,.m3u8" onchange="loadFile(this)">
-  <input type="text" placeholder="Ou URL da lista M3U" id="m3uUrl">
-  <button style="margin-top:10px" onclick="loadUrl()">Carregar URL</button>
-</div>
-
-<video id="player" controls></video>
-
-<div id="list" class="list"></div>
-
-</div>
-
-<script>
-let channels=[];
-
-function show(type){
-  document.getElementById('add').classList.add('hidden');
-  if(type==='add') document.getElementById('add').classList.remove('hidden');
-  render(type);
-}
-
-function loadFile(input){
-  const file=input.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>parseM3U(e.target.result);
-  reader.readAsText(file);
-}
-
-function loadUrl(){
-  const url=document.getElementById('m3uUrl').value;
-  if(!url)return alert('Informe a URL');
-  fetch(url).then(r=>r.text()).then(parseM3U)
-  .catch(()=>alert('Erro ao carregar URL'));
-}
-
-function parseM3U(data){
-  channels=[];
-  const lines=data.split('\n');
-  let current={};
-  lines.forEach(l=>{
-    l=l.trim();
-    if(l.startsWith('#EXTINF')){
-      const name=l.split(',').pop();
-      const group=(l.match(/group-title="([^"]+)"/)||[])[1]||'Live';
-      current={name,group};
-    }else if(l.startsWith('http')){
-      current.url=l;
-      channels.push(current);
-      current={};
-    }
-  });
-  localStorage.setItem('bruzi_channels',JSON.stringify(channels));
-  render('live');
-}
-
-function render(type){
-  const list=document.getElementById('list');
-  list.innerHTML='';
-  const data=JSON.parse(localStorage.getItem('bruzi_channels')||'[]');
-  data.filter(c=>{
-    if(type==='movies')return /movie|filme/i.test(c.group);
-    if(type==='series')return /series/i.test(c.group);
-    if(type==='live')return true;
-    return true;
-  }).forEach(c=>{
-    const div=document.createElement('div');
-    div.className='item';
-    const badgeClass=
-      /movie|filme/i.test(c.group)?'movie':
-      /series/i.test(c.group)?'series':'live';
-    div.innerHTML=`
-      <span>${c.name}</span>
-      <span class="badge ${badgeClass}">${c.group}</span>
-    `;
-    div.onclick=()=>play(c.url);
-    list.appendChild(div);
-  });
-}
-
-function play(url){
-  const v=document.getElementById('player');
-  v.src=url;
-  v.play();
-}
-
-function exportM3U(){
-  if(!channels.length)return alert('Nada para extrair');
-  let m3u='#EXTM3U\n';
-  channels.forEach(c=>{
-    m3u+=`#EXTINF:-1 group-title="${c.group}",${c.name}\n${c.url}\n`;
-  });
-  const blob=new Blob([m3u],{type:'text/plain'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='bruzi_extraido.m3u';
-  a.click();
-}
-
-function resetAll(){
-  localStorage.clear();
-  channels=[];
-  document.getElementById('list').innerHTML='';
-  document.getElementById('player').src='';
-}
-</script>
 
 </body>
-  </html>
+</html>
