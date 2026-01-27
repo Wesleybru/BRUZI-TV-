@@ -10,20 +10,20 @@
         body { background: radial-gradient(circle, #2a0202 0%, #05010a 100%); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; }
         .container { display: flex; flex-direction: column; height: 100%; padding: 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-size: 26px; font-weight: 800; color: #00d4ff; text-transform: uppercase; }
-        .main-menu { display: grid; grid-template-columns: 1.5fr 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 12px; flex-grow: 1; }
+        .logo { font-size: 24px; font-weight: 800; color: #00d4ff; text-transform: uppercase; }
+        .main-menu { display: grid; grid-template-columns: 1.5fr 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 10px; flex-grow: 1; }
         .menu-item { background: #4a0000; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
         .menu-item:hover { background: #b00020; border-color: gold; }
         .live { grid-row: span 2; background: #800000; }
-        #pl-status { font-size: 11px; padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,0.5); }
+        #pl-status { font-size: 11px; padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,0.5); color: gold; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; }
         .modal-content { background: #222; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #b00020; }
         .btn { width: 100%; padding: 12px; background: #b00020; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; width: 100%; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; }
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05010a; z-index: 2000; overflow-y: auto; padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
-        .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; font-size: 10px; text-align: center; }
-        .card img { width: 100%; height: 150px; object-fit: cover; }
+        .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; font-size: 10px; text-align: center; padding-bottom: 5px; }
+        .card img { width: 100%; height: 150px; object-fit: cover; background: #222; }
     </style>
 </head>
 <body>
@@ -31,69 +31,88 @@
 <div class="container">
     <div class="header">
         <div class="logo">4K<span> IPTV</span></div>
-        <div id="pl-status">⚪ Offline</div>
+        <div id="pl-status">⚪ Sem Lista</div>
     </div>
     <div class="main-menu">
-        <div class="menu-item live" onclick="exibir('TV')"><i class="fas fa-tv"></i><span>Live</span></div>
-        <div class="menu-item" onclick="exibir('MOVIE')"><i class="fas fa-play-circle"></i><span>Movies</span></div>
-        <div class="menu-item" onclick="alert('v3.5 Pro')"><i class="fas fa-cog"></i><span>Settings</span></div>
-        <div class="menu-item" onclick="exibir('SERIES')"><i class="fas fa-list"></i><span>Series</span></div>
-        <div class="menu-item" onclick="location.reload()"><i class="fas fa-sync-alt"></i><span>Reload</span></div>
-        <div class="menu-item" onclick="document.getElementById('mAdd').style.display='flex'"><i class="fas fa-user-circle"></i><span>Account</span></div>
-        <div class="menu-item" style="background: #222;" onclick="localStorage.clear();location.reload();"><i class="fas fa-sign-out-alt"></i><span>Exit</span></div>
+        <div class="menu-item live" onclick="exibir('TV')"><i class="fas fa-tv" style="font-size:40px; margin-bottom:10px;"></i><span>Live</span></div>
+        <div class="menu-item" onclick="exibir('MOVIE')"><i class="fas fa-play-circle" style="font-size:30px; margin-bottom:10px;"></i><span>Movies</span></div>
+        <div class="menu-item" onclick="alert('Configurações Pro ativas')"><i class="fas fa-cog" style="font-size:30px; margin-bottom:10px;"></i><span>Settings</span></div>
+        <div class="menu-item" onclick="exibir('SERIES')"><i class="fas fa-list" style="font-size:30px; margin-bottom:10px;"></i><span>Series</span></div>
+        <div class="menu-item" onclick="location.reload()"><i class="fas fa-sync-alt" style="font-size:30px; margin-bottom:10px;"></i><span>Reload</span></div>
+        <div class="menu-item" onclick="document.getElementById('mAdd').style.display='flex'"><i class="fas fa-user-circle" style="font-size:30px; margin-bottom:10px;"></i><span>Account</span></div>
+        <div class="menu-item" style="background: #222;" onclick="localStorage.clear();location.reload();"><i class="fas fa-sign-out-alt" style="font-size:30px; margin-bottom:10px;"></i><span>Exit</span></div>
     </div>
 </div>
 
 <div id="viewer">
-    <button onclick="document.getElementById('viewer').style.display='none'" class="btn" style="width: 100px;">VOLTAR</button>
-    <div id="grid" class="grid" style="margin-top:20px;"></div>
+    <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:20px;">
+        <button onclick="document.getElementById('viewer').style.display='none'" class="btn" style="width: 100px; margin:0;">VOLTAR</button>
+        <span id="count" style="font-size:12px; color:gold;"></span>
+    </div>
+    <div id="grid" class="grid"></div>
 </div>
 
 <div id="mAdd" class="modal">
     <div class="modal-content">
-        <h3>Sincronizar Lista</h3>
-        <input type="text" id="urlIn" placeholder="Cole sua URL M3U...">
-        <button class="btn" onclick="salvar()">CONECTAR</button>
+        <h3 style="text-align:center; margin-bottom:10px;">Sincronizar Lista</h3>
+        <input type="text" id="urlIn" placeholder="Cole sua URL M3U completa aqui...">
+        <button class="btn" onclick="salvar()">CONECTAR AGORA</button>
         <button class="btn" style="background:#444" onclick="document.getElementById('mAdd').style.display='none'">CANCELAR</button>
     </div>
 </div>
 
 <script>
     let canais = [];
-    function salvar() { const u = document.getElementById('urlIn').value; if(u){localStorage.setItem('u', u); location.reload();} }
+    function salvar() { 
+        const u = document.getElementById('urlIn').value.trim(); 
+        if(u){
+            localStorage.setItem('iptv_u', u); 
+            location.reload();
+        } 
+    }
 
-    async function carregar() {
-        const u = localStorage.getItem('u');
+    async function buscar(url) {
+        const proxies = [
+            'https://api.allorigins.win/get?url=',
+            'https://corsproxy.io/?',
+            'https://thingproxy.freeboard.io/fetch/'
+        ];
+        
+        for (let p of proxies) {
+            try {
+                const r = await fetch(p + encodeURIComponent(url));
+                const d = await r.json();
+                const texto = d.contents || d;
+                if (texto && texto.includes('#EXTM3U')) return texto;
+            } catch(e) { continue; }
+        }
+        return null;
+    }
+
+    async function iniciar() {
+        const u = localStorage.getItem('iptv_u');
         if(!u) return;
         const status = document.getElementById('pl-status');
-        status.innerText = "🔵 Conectando...";
+        status.innerText = "⏳ Sincronizando...";
 
-        // TENTATIVA 1: Proxy Direto
-        try {
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(u));
-            const j = await r.json();
-            parsear(j.contents);
-        } catch(e) {
-            // TENTATIVA 2: Backup Proxy
-            try {
-                const r2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(u));
-                const t2 = await r2.text();
-                parsear(t2);
-            } catch(e2) {
-                status.innerText = "🔴 Erro Crítico";
-                status.style.color = "red";
-            }
+        const data = await buscar(u);
+        if(data) {
+            parsear(data);
+        } else {
+            status.innerText = "❌ Erro: Link Inválido";
+            status.style.color = "#ff4444";
         }
     }
 
     function parsear(data) {
         const linhas = data.split('\n');
         let obj = null;
+        canais = [];
         linhas.forEach(l => {
             if(l.startsWith('#EXTINF:')) {
-                const n = l.split(',')[1] || "Canal";
+                const n = l.split(',')[1] || "Canal Sem Nome";
                 const lg = l.match(/tvg-logo="([^"]+)"/)?.[1] || "";
-                const g = l.match(/group-title="([^"]+)"/)?.[1] || "Canais";
+                const g = l.match(/group-title="([^"]+)"/)?.[1] || "Geral";
                 obj = { n, lg, g: g.toUpperCase() };
             } else if(l.startsWith('http') && obj) {
                 obj.u = l.trim();
@@ -101,20 +120,31 @@
                 obj = null;
             }
         });
-        document.getElementById('pl-status').innerText = "🟢 Online: " + canais.length;
-        document.getElementById('pl-status').style.color = "lime";
+        const status = document.getElementById('pl-status');
+        status.innerText = "🟢 Online: " + canais.length;
+        status.style.color = "#00ff00";
     }
 
     function exibir(t) {
+        if(canais.length === 0) {
+            alert("Nenhuma lista carregada. Vá em Account.");
+            return;
+        }
         document.getElementById('viewer').style.display = 'block';
         const g = document.getElementById('grid');
+        const c = document.getElementById('count');
         g.innerHTML = "";
         const f = canais.filter(i => i.g.includes(t) || (t === 'TV' && !i.g.includes('MOVIE') && !i.g.includes('SERIE')));
-        f.slice(0, 100).forEach(i => {
-            g.innerHTML += `<div class="card"><img src="${i.lg || 'https://via.placeholder.com/150x200?text=TV'}"><div>${i.n}</div></div>`;
+        c.innerText = f.length + " itens encontrados";
+        f.slice(0, 200).forEach(i => {
+            g.innerHTML += `
+                <div class="card" onclick="alert('Iniciando: ' + '${i.n}')">
+                    <img src="${i.lg}" onerror="this.src='https://via.placeholder.com/150x200?text=SINAL'">
+                    <div style="padding:5px; font-weight:bold;">${i.n.substring(0,20)}</div>
+                </div>`;
         });
     }
-    carregar();
+    iniciar();
 </script>
 </body>
 </html>
