@@ -7,42 +7,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background: radial-gradient(circle, #2a0202 0%, #05010a 100%); 
-            color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden;
-        }
+        body { background: radial-gradient(circle, #2a0202 0%, #05010a 100%); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; }
         .container { display: flex; flex-direction: column; height: 100%; padding: 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { font-size: 26px; font-weight: 800; color: #00d4ff; text-transform: uppercase; }
         .logo span { color: white; }
-        
-        .main-menu { 
-            display: grid; 
-            grid-template-columns: 1.5fr 1fr 1fr; 
-            grid-template-rows: repeat(3, 1fr); 
-            gap: 12px; flex-grow: 1;
-        }
-        .menu-item { 
-            background: #4a0000; 
-            border-radius: 12px; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; transition: 0.2s; cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
+        .main-menu { display: grid; grid-template-columns: 1.5fr 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 12px; flex-grow: 1; }
+        .menu-item { background: #4a0000; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
         .menu-item:hover { background: #b00020; transform: scale(1.03); border-color: gold; }
         .menu-item i { font-size: 45px; margin-bottom: 10px; }
-        .menu-item span { font-size: 16px; font-weight: bold; text-transform: uppercase; }
-
         .live { grid-row: span 2; background: #800000; } 
-        
-        /* Grid de Capas Reais */
         #content-viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05010a; z-index: 2000; overflow-y: auto; padding: 20px; }
         .grid-capas { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
         .capa-card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; cursor: pointer; }
-        .capa-card:hover { border-color: gold; }
-        .capa-card img { width: 100%; height: 190px; object-fit: cover; background: #222; }
-        .capa-card div { padding: 8px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
+        .capa-card img { width: 100%; height: 180px; object-fit: cover; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; }
         .modal-content { background: #222; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px; border: 1px solid #b00020; }
         .btn { width: 100%; padding: 12px; background: #b00020; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
@@ -53,102 +31,84 @@
 
 <div class="container">
     <div class="header">
-        <div class="logo">4K<span> IPTV</span> PLAYER</div>
-        <div style="font-size: 11px; color: #888;">Playlist: <span id="pl-status" style="color:red">OFFLINE</span></div>
+        <div class="logo">4K<span> IPTV</span></div>
+        <div id="pl-status" style="font-size: 11px; color: #888;">Playlist: Desconectada</div>
     </div>
 
     <div class="main-menu">
-        <div class="menu-item live" onclick="abrirPlayer('TV')"><i class="fas fa-tv"></i><span>Live</span></div>
-        <div class="menu-item movies" onclick="abrirPlayer('MOVIE')"><i class="fas fa-play-circle"></i><span>Movies</span></div>
-        <div class="menu-item" onclick="abrirConfig()"><i class="fas fa-cog"></i><span>Settings</span></div>
-        <div class="menu-item series" onclick="abrirPlayer('SERIES')"><i class="fas fa-list"></i><span>Series</span></div>
+        <div class="menu-item live" onclick="abrir('TV')"><i class="fas fa-tv"></i><span>Live</span></div>
+        <div class="menu-item" onclick="abrir('MOVIE')"><i class="fas fa-play-circle"></i><span>Movies</span></div>
+        <div class="menu-item" onclick="document.getElementById('modalConfig').style.display='flex'"><i class="fas fa-cog"></i><span>Settings</span></div>
+        <div class="menu-item" onclick="abrir('SERIES')"><i class="fas fa-list"></i><span>Series</span></div>
         <div class="menu-item" onclick="location.reload()"><i class="fas fa-sync-alt"></i><span>Reload</span></div>
-        <div class="menu-item" onclick="abrirAdd()"><i class="fas fa-user-circle"></i><span>Account</span></div>
-        <div class="menu-item" style="background: #222;" onclick="window.close()"><i class="fas fa-sign-out-alt"></i><span>Exit</span></div>
+        <div class="menu-item" onclick="document.getElementById('modalAdd').style.display='flex'"><i class="fas fa-user-circle"></i><span>Account</span></div>
+        <div class="menu-item" style="background: #222;" onclick="alert('Saindo...')"><i class="fas fa-sign-out-alt"></i><span>Exit</span></div>
     </div>
 </div>
 
 <div id="content-viewer">
-    <button onclick="fecharViewer()" class="btn" style="width: 100px; margin-bottom: 20px;">VOLTAR</button>
+    <button onclick="document.getElementById('content-viewer').style.display='none'" class="btn" style="width: 100px; margin-bottom: 20px;">VOLTAR</button>
     <div id="grid-capas" class="grid-capas"></div>
-</div>
-
-<div id="modalConfig" class="modal">
-    <div class="modal-content">
-        <h3>Configurações Internas</h3>
-        <button class="btn" onclick="fecharModais()">LIMPAR CACHE</button>
-        <button class="btn" style="background:#444;" onclick="fecharModais()">VOLTAR</button>
-    </div>
 </div>
 
 <div id="modalAdd" class="modal">
     <div class="modal-content">
-        <h3>Sincronizar Playlist</h3>
-        <input type="text" id="urlInput" placeholder="URL M3U...">
-        <button class="btn" onclick="salvarLista()">CONECTAR AGORA</button>
+        <h3>Conectar Lista</h3>
+        <input type="text" id="urlInput" placeholder="Cole sua URL M3U aqui...">
+        <button class="btn" onclick="salvar()">SINCRONIZAR</button>
     </div>
 </div>
 
+<div id="modalConfig" class="modal">
+    <div class="modal-content"><h3>Configurações</h3><button class="btn" onclick="location.reload()">LIMPAR TUDO</button></div>
+</div>
+
 <script>
-    let playlistData = [];
-    const proxy = "https://api.allorigins.win/get?url=";
-
-    function abrirConfig() { document.getElementById('modalConfig').style.display='flex'; }
-    function abrirAdd() { document.getElementById('modalAdd').style.display='flex'; }
-    function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-    function fecharViewer() { document.getElementById('content-viewer').style.display = 'none'; }
-
-    async function salvarLista() {
+    let dados = [];
+    async function salvar() {
         const url = document.getElementById('urlInput').value;
-        localStorage.setItem('playlist_url', url);
-        location.reload();
+        if(url) {
+            localStorage.setItem('url', url);
+            location.reload();
+        }
     }
 
-    async function carregarLista() {
-        const url = localStorage.getItem('playlist_url');
+    async function carregar() {
+        const url = localStorage.getItem('url');
         if(!url) return;
-        document.getElementById('pl-status').innerText = "CONECTANDO...";
+        document.getElementById('pl-status').innerText = "CARREGANDO...";
         try {
-            const res = await fetch(proxy + encodeURIComponent(url));
+            // Usando um proxy diferente e mais rápido
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
             const json = await res.json();
-            parsear(json.contents);
-            document.getElementById('pl-status').innerText = "ONLINE";
-            document.getElementById('pl-status').style.color = "#00ff00";
-        } catch(e) { document.getElementById('pl-status').innerText = "ERRO"; }
+            const linhas = json.contents.split('\n');
+            let item = null;
+            linhas.forEach(l => {
+                if(l.startsWith('#EXTINF:')) {
+                    const nome = l.split(',')[1] || "Sem nome";
+                    const logo = l.match(/tvg-logo="([^"]+)"/)?.[1] || "";
+                    const grupo = l.match(/group-title="([^"]+)"/)?.[1] || "Canais";
+                    item = { nome, logo, grupo: grupo.toUpperCase() };
+                } else if(l.startsWith('http') && item) {
+                    item.link = l.trim();
+                    dados.push(item);
+                    item = null;
+                }
+            });
+            document.getElementById('pl-status').innerText = "ONLINE (" + dados.length + ")";
+        } catch(e) { document.getElementById('pl-status').innerText = "ERRO DE CONEXÃO"; }
     }
 
-    function parsear(data) {
-        const lines = data.split('\n');
-        let obj = null;
-        lines.forEach(l => {
-            if(l.startsWith('#EXTINF:')) {
-                const logo = l.match(/tvg-logo="([^"]+)"/)?.[1] || "";
-                const group = l.match(/group-title="([^"]+)"/)?.[1]?.toUpperCase() || "TV";
-                obj = { name: l.split(',')[1], logo, group };
-            } else if(l.startsWith('http') && obj) {
-                obj.url = l.trim();
-                playlistData.push(obj);
-                obj = null;
-            }
-        });
-    }
-
-    function abrirPlayer(tipo) {
+    function abrir(tipo) {
         document.getElementById('content-viewer').style.display = 'block';
         const grid = document.getElementById('grid-capas');
         grid.innerHTML = "";
-        const filtrados = playlistData.filter(i => i.group.includes(tipo) || (tipo === 'TV' && !i.group.includes('MOVIE') && !i.group.includes('SERIE')));
-        filtrados.slice(0, 100).forEach(item => {
-            grid.innerHTML += `
-                <div class="capa-card" onclick="play('${item.url}')">
-                    <img src="${item.logo}" onerror="this.src='https://via.placeholder.com/150x200?text=Sinal'">
-                    <div>${item.name}</div>
-                </div>`;
+        const lista = dados.filter(i => i.grupo.includes(tipo) || (tipo === 'TV' && !i.grupo.includes('MOVIE') && !i.grupo.includes('SERIE')));
+        lista.slice(0, 150).forEach(i => {
+            grid.innerHTML += `<div class="capa-card" onclick="alert('Abrindo: '+ '${i.nome}')"><img src="${i.logo || 'https://via.placeholder.com/150x200?text=SINAL'}"><div>${i.nome}</div></div>`;
         });
     }
-
-    function play(url) { alert("Iniciando Stream: " + url); }
-    carregarLista();
+    carregar();
 </script>
 </body>
 </html>
