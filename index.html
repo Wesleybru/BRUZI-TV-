@@ -1,125 +1,192 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4K IPTV PLAYER PRO</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: radial-gradient(circle, #1a0101 0%, #000 100%); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; }
-        .container { display: flex; flex-direction: column; height: 100%; padding: 15px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .logo { font-size: 22px; font-weight: 900; color: #00d4ff; text-transform: uppercase; }
-        .main-menu { display: grid; grid-template-columns: 1.5fr 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 10px; flex-grow: 1; }
-        .menu-item { background: #3d0000; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
-        .menu-item:active { transform: scale(0.95); background: #b00020; }
-        .live { grid-row: span 2; background: #700000; }
-        #pl-status { font-size: 10px; padding: 4px 10px; border-radius: 20px; background: #000; border: 1px solid gold; color: gold; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #111; padding: 20px; border-radius: 15px; width: 100%; max-width: 350px; border: 1px solid #b00020; text-align: center; }
-        .btn { width: 100%; padding: 12px; background: #b00020; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #222; color: white; }
-        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; overflow-y: auto; padding: 15px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-        .card { background: #111; border-radius: 8px; overflow: hidden; border: 1px solid #222; font-size: 10px; text-align: center; }
-        .card img { width: 100%; height: 140px; object-fit: cover; background: #000; }
-    </style>
+<meta charset="UTF-8">
+<title>4K IPTV PLAYER PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:#fff;font-family:Arial}
+header{padding:12px;background:#111;display:flex;justify-content:space-between;align-items:center}
+button,input{border:0;border-radius:6px}
+button{background:#b00020;color:#fff;padding:10px;cursor:pointer}
+input{padding:10px;width:100%;margin:6px 0}
+#menu{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:15px}
+.card{background:#1a1a1a;padding:20px;text-align:center;border-radius:10px;cursor:pointer}
+.card:hover{background:#b00020}
+#viewer{display:none;padding:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.item{background:#111;border-radius:8px;overflow:hidden}
+.item img{width:100%;height:150px;object-fit:cover}
+.item div{padding:5px;font-size:12px}
+.tv{color:#0ff}
+.movie{color:#0f0}
+.series{color:#ff0}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;z-index:10}
+.box{background:#111;padding:20px;border-radius:10px;width:90%;max-width:420px}
+#player video{width:100%;height:100%;background:#000}
+#search{margin:10px 0}
+.star{background:#222;color:#fff;font-size:11px}
+</style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="header">
-        <div class="logo">4K<span> IPTV</span></div>
-        <div id="pl-status">⚪ OFF</div>
-    </div>
-    <div class="main-menu">
-        <div class="menu-item live" onclick="exibir('TV')"><i class="fas fa-tv" style="font-size:35px;margin-bottom:8px"></i><span>Live</span></div>
-        <div class="menu-item" onclick="exibir('MOVIE')"><i class="fas fa-play-circle" style="font-size:25px;margin-bottom:8px"></i><span>Movies</span></div>
-        <div class="menu-item" onclick="alert('Player v5.0 Pro Ativo')"><i class="fas fa-cog" style="font-size:25px;margin-bottom:8px"></i><span>Settings</span></div>
-        <div class="menu-item" onclick="exibir('SERIES')"><i class="fas fa-list" style="font-size:25px;margin-bottom:8px"></i><span>Series</span></div>
-        <div class="menu-item" onclick="location.reload()"><i class="fas fa-sync-alt" style="font-size:25px;margin-bottom:8px"></i><span>Reload</span></div>
-        <div class="menu-item" onclick="document.getElementById('mAdd').style.display='flex'"><i class="fas fa-user-circle" style="font-size:25px;margin-bottom:8px"></i><span>Account</span></div>
-        <div class="menu-item" style="background: #222;" onclick="localStorage.clear();location.reload();"><i class="fas fa-sign-out-alt" style="font-size:25px;margin-bottom:8px"></i><span>Exit</span></div>
-    </div>
+<header>
+  <b>4K IPTV PLAYER</b>
+  <span id="status">OFF</span>
+</header>
+
+<div id="menu">
+  <div class="card" onclick="openLogin()">Adicionar Lista</div>
+  <div class="card" onclick="show('TV')">Live TV</div>
+  <div class="card" onclick="show('MOVIE')">Movies</div>
+  <div class="card" onclick="show('SERIES')">Series</div>
+  <div class="card" onclick="showFav()">Favoritos</div>
+  <div class="card" onclick="resetAll()">Reset</div>
 </div>
 
 <div id="viewer">
-    <button onclick="document.getElementById('viewer').style.display='none'" class="btn" style="width: 80px; margin-bottom: 15px; padding: 8px; font-size: 12px;">VOLTAR</button>
-    <div id="grid" class="grid"></div>
+  <button onclick="closeViewer()">Voltar</button>
+  <input id="search" placeholder="Buscar..." oninput="buscar(this.value)">
+  <div id="grid" class="grid"></div>
 </div>
 
-<div id="mAdd" class="modal">
-    <div class="modal-content">
-        <h3 style="margin-bottom: 10px;">Configurar Playlist</h3>
-        <p style="font-size: 12px; color: #888;">Cole o link M3U abaixo:</p>
-        <input type="text" id="urlIn" placeholder="http://...">
-        <button class="btn" onclick="salvar()">ATIVAR LISTA</button>
-        <p onclick="document.getElementById('mAdd').style.display='none'" style="margin-top:15px; cursor:pointer; font-size: 12px; color: #666;">Cancelar</p>
-    </div>
+<div id="player" class="modal" onclick="closePlayer()"></div>
+
+<div id="login" class="modal">
+  <div class="box">
+    <h3>M3U ou XC Login</h3>
+    <input id="m3u" placeholder="URL M3U">
+    <hr>
+    <input id="host" placeholder="Servidor XC (http://ip:porta)">
+    <input id="user" placeholder="Usuário">
+    <input id="pass" placeholder="Senha">
+    <button onclick="save()">ATIVAR</button>
+    <p onclick="closeLogin()" style="color:#888;cursor:pointer">Cancelar</p>
+  </div>
 </div>
 
 <script>
-    let canais = [];
-    function salvar() { 
-        let u = document.getElementById('urlIn').value.trim(); 
-        if(u){ localStorage.setItem('iptv_url', u); location.reload(); } 
+let canais=[],visiveis=[];
+let fav=JSON.parse(localStorage.getItem("fav")||"[]");
+const CACHE_KEY="iptv_cache_v1";
+
+function openLogin(){login.style.display="flex"}
+function closeLogin(){login.style.display="none"}
+function closeViewer(){viewer.style.display="none"}
+function closePlayer(){player.style.display="none";player.innerHTML=""}
+
+function resetAll(){
+  localStorage.clear();
+  location.reload();
+}
+
+function save(){
+  if(m3u.value.trim()) localStorage.setItem("iptv",m3u.value.trim());
+  if(host.value&&user.value&&pass.value){
+    localStorage.setItem("iptv",
+      `${host.value}/get.php?username=${user.value}&password=${pass.value}&type=m3u_plus`);
+  }
+  location.reload();
+}
+
+function saveCache(){
+  localStorage.setItem(CACHE_KEY,JSON.stringify(canais));
+}
+
+function loadCache(){
+  const c=localStorage.getItem(CACHE_KEY);
+  if(c){
+    canais=JSON.parse(c);
+    status.innerText="CACHE "+canais.length;
+  }
+}
+
+async function load(){
+  loadCache();
+  const url=localStorage.getItem("iptv");
+  if(!url) return;
+  status.innerText="Carregando...";
+  try{
+    const r=await fetch("https://cors.isomorphic-git.org/"+url);
+    const t=await r.text();
+    parse(t);
+    saveCache();
+    status.innerText="ONLINE "+canais.length;
+  }catch{
+    status.innerText="ERRO";
+  }
+}
+
+function parse(data){
+  canais=[];
+  const linhas=data.replace(/\r/g,"").split("\n");
+  let temp=null;
+  linhas.forEach(l=>{
+    l=l.replace(/\uFEFF/g,"").trim();
+    if(l.includes("#EXTINF")){
+      temp={
+        n:l.split(",").pop().trim(),
+        g:(l.match(/group-title="([^"]+)"/i)?.[1]||"TV").toUpperCase(),
+        lg:l.match(/tvg-logo="([^"]+)"/i)?.[1]||"",
+        u:""
+      };
+    }else if(temp && (l.startsWith("http")||l.startsWith("rtmp"))){
+      temp.u=l;
+      canais.push(temp);
+      temp=null;
     }
+  });
+}
 
-    async function carregar() {
-        const u = localStorage.getItem('iptv_url');
-        if(!u) return;
-        const status = document.getElementById('pl-status');
-        status.innerText = "⏳ Lendo...";
+function show(tipo){
+  viewer.style.display="block";
+  visiveis=canais.filter(c=>c.g.includes(tipo));
+  render(visiveis,tipo);
+}
 
-        // PROXY ULTRA RESISTENTE (Ignora bloqueios de navegador)
-        const proxy = "https://api.allorigins.win/get?url=";
-        
-        try {
-            const res = await fetch(proxy + encodeURIComponent(u));
-            const json = await res.json();
-            const data = json.contents;
-            
-            if(!data || !data.includes('#EXTM3U')) throw new Error();
+function render(lista,tipo){
+  grid.innerHTML="";
+  lista.slice(0,300).forEach(c=>{
+    const isFav=fav.includes(c.n);
+    grid.innerHTML+=`
+    <div class="item">
+      <img src="${c.lg}" onerror="this.src='https://via.placeholder.com/150'"
+           onclick="play('${c.u}')">
+      <div class="${tipo.toLowerCase()}">${c.n}</div>
+      <button class="star" onclick="toggleFav('${c.n}')">
+        ${isFav?"★ Favorito":"☆ Favoritar"}
+      </button>
+    </div>`;
+  });
+}
 
-            const linhas = data.split('\n');
-            let item = null;
-            canais = [];
-            linhas.forEach(l => {
-                if(l.startsWith('#EXTINF:')) {
-                    const n = l.split(',')[1] || "Canal";
-                    const lg = l.match(/tvg-logo="([^"]+)"/)?.[1] || "";
-                    const g = l.match(/group-title="([^"]+)"/)?.[1] || "Canais";
-                    item = { n, lg, g: g.toUpperCase() };
-                } else if(l.startsWith('http') && item) {
-                    item.u = l.trim();
-                    canais.push(item);
-                    item = null;
-                }
-            });
-            status.innerText = "🟢 Online: " + canais.length;
-            status.style.color = "#00ff00";
-        } catch(e) {
-            status.innerText = "🔴 Link com Erro";
-            status.style.color = "red";
-        }
-    }
+function play(url){
+  player.style.display="flex";
+  player.innerHTML=`<video src="${url}" controls autoplay></video>`;
+}
 
-    function exibir(t) {
-        if(canais.length === 0) return;
-        document.getElementById('viewer').style.display = 'block';
-        const g = document.getElementById('grid');
-        g.innerHTML = "";
-        const f = canais.filter(i => i.g.includes(t) || (t === 'TV' && !i.g.includes('MOVIE') && !i.g.includes('SERIE')));
-        f.slice(0, 150).forEach(i => {
-            g.innerHTML += `
-                <div class="card" onclick="alert('O Player vai abrir: ' + '${i.n}')">
-                    <img src="${i.lg}" onerror="this.src='https://via.placeholder.com/150x200?text=SINAL'">
-                    <div style="padding:4px">${i.n.substring(0,15)}</div>
-                </div>`;
-        });
-    }
-    carregar();
+function toggleFav(n){
+  fav=fav.includes(n)?fav.filter(x=>x!==n):[...fav,n];
+  localStorage.setItem("fav",JSON.stringify(fav));
+}
+
+function showFav(){
+  viewer.style.display="block";
+  render(canais.filter(c=>fav.includes(c.n)),"tv");
+}
+
+function buscar(t){
+  render(visiveis.filter(c=>c.n.toLowerCase().includes(t.toLowerCase())),"tv");
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape") closePlayer();
+});
+
+load();
 </script>
+
 </body>
-</html>
+    </html>
