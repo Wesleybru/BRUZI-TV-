@@ -2,38 +2,31 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>4K IPTV PLAYER PRO</title>
+<title>BRUZI+ 📺</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-*{box-sizing:border-box}
 body{margin:0;background:#000;color:#fff;font-family:Arial}
-header{padding:12px;background:#111;display:flex;justify-content:space-between;align-items:center}
+header{padding:12px;background:#111;display:flex;justify-content:space-between}
 button,input{border:0;border-radius:6px}
-button{background:#b00020;color:#fff;padding:10px;cursor:pointer}
+button{background:#b00020;color:#fff;padding:12px;cursor:pointer}
 input{padding:10px;width:100%;margin:6px 0}
-#menu{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:15px}
-.card{background:#1a1a1a;padding:20px;text-align:center;border-radius:10px;cursor:pointer}
+#menu{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:15px}
+.card{background:#1a1a1a;padding:20px;text-align:center;border-radius:12px}
 .card:hover{background:#b00020}
 #viewer{display:none;padding:10px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
 .item{background:#111;border-radius:8px;overflow:hidden}
 .item img{width:100%;height:150px;object-fit:cover}
-.item div{padding:5px;font-size:12px}
-.tv{color:#0ff}
-.movie{color:#0f0}
-.series{color:#ff0}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;z-index:10}
-.box{background:#111;padding:20px;border-radius:10px;width:90%;max-width:420px}
-#player video{width:100%;height:100%;background:#000}
-#search{margin:10px 0}
-.star{background:#222;color:#fff;font-size:11px}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center}
+.box{background:#111;padding:20px;border-radius:12px;width:90%;max-width:400px}
+video{width:100%;height:100%;background:#000}
 </style>
 </head>
 
 <body>
 
 <header>
-  <b>4K IPTV PLAYER</b>
+  <b>BRUZI+ 📺</b>
   <span id="status">OFF</span>
 </header>
 
@@ -47,146 +40,103 @@ input{padding:10px;width:100%;margin:6px 0}
 </div>
 
 <div id="viewer">
-  <button onclick="closeViewer()">Voltar</button>
-  <input id="search" placeholder="Buscar..." oninput="buscar(this.value)">
+  <button onclick="viewer.style.display='none'">Voltar</button>
   <div id="grid" class="grid"></div>
 </div>
 
-<div id="player" class="modal" onclick="closePlayer()"></div>
+<div id="player" class="modal" onclick="player.style.display='none'"></div>
 
 <div id="login" class="modal">
   <div class="box">
-    <h3>M3U ou XC Login</h3>
-    <input id="m3u" placeholder="URL M3U">
+    <h3>Adicionar Lista</h3>
+
+    <p><b>📂 Arquivo M3U (FUNCIONA 100%)</b></p>
+    <input type="file" accept=".m3u,.m3u8" onchange="loadFile(this.files[0])">
+
     <hr>
-    <input id="host" placeholder="Servidor XC (http://ip:porta)">
+
+    <p><b>XC Login</b></p>
+    <input id="host" placeholder="http://servidor:porta">
     <input id="user" placeholder="Usuário">
     <input id="pass" placeholder="Senha">
-    <button onclick="save()">ATIVAR</button>
-    <p onclick="closeLogin()" style="color:#888;cursor:pointer">Cancelar</p>
+
+    <button onclick="loadXC()">ATIVAR</button>
+    <p onclick="login.style.display='none'" style="color:#888">Cancelar</p>
   </div>
 </div>
 
 <script>
-let canais=[],visiveis=[];
-let fav=JSON.parse(localStorage.getItem("fav")||"[]");
-const CACHE_KEY="iptv_cache_v1";
+let canais=[],fav=JSON.parse(localStorage.getItem("fav")||"[]");
 
 function openLogin(){login.style.display="flex"}
-function closeLogin(){login.style.display="none"}
-function closeViewer(){viewer.style.display="none"}
-function closePlayer(){player.style.display="none";player.innerHTML=""}
-
-function resetAll(){
-  localStorage.clear();
-  location.reload();
-}
-
-function save(){
-  if(m3u.value.trim()) localStorage.setItem("iptv",m3u.value.trim());
-  if(host.value&&user.value&&pass.value){
-    localStorage.setItem("iptv",
-      `${host.value}/get.php?username=${user.value}&password=${pass.value}&type=m3u_plus`);
-  }
-  location.reload();
-}
-
-function saveCache(){
-  localStorage.setItem(CACHE_KEY,JSON.stringify(canais));
-}
-
-function loadCache(){
-  const c=localStorage.getItem(CACHE_KEY);
-  if(c){
-    canais=JSON.parse(c);
-    status.innerText="CACHE "+canais.length;
-  }
-}
-
-async function load(){
-  loadCache();
-  const url=localStorage.getItem("iptv");
-  if(!url) return;
-  status.innerText="Carregando...";
-  try{
-    const r=await fetch("https://cors.isomorphic-git.org/"+url);
-    const t=await r.text();
-    parse(t);
-    saveCache();
-    status.innerText="ONLINE "+canais.length;
-  }catch{
-    status.innerText="ERRO";
-  }
-}
+function resetAll(){localStorage.clear();location.reload()}
 
 function parse(data){
   canais=[];
-  const linhas=data.replace(/\r/g,"").split("\n");
   let temp=null;
-  linhas.forEach(l=>{
-    l=l.replace(/\uFEFF/g,"").trim();
-    if(l.includes("#EXTINF")){
+  data.split(/\r?\n/).forEach(l=>{
+    l=l.trim();
+    if(l.startsWith("#EXTINF")){
       temp={
         n:l.split(",").pop().trim(),
         g:(l.match(/group-title="([^"]+)"/i)?.[1]||"TV").toUpperCase(),
         lg:l.match(/tvg-logo="([^"]+)"/i)?.[1]||"",
         u:""
       };
-    }else if(temp && (l.startsWith("http")||l.startsWith("rtmp"))){
+    }else if(temp && l.startsWith("http")){
       temp.u=l;
       canais.push(temp);
       temp=null;
     }
   });
+  status.innerText="ONLINE "+canais.length;
+}
+
+function loadFile(file){
+  const r=new FileReader();
+  r.onload=e=>{
+    parse(e.target.result);
+    login.style.display="none";
+  };
+  r.readAsText(file);
+}
+
+function loadXC(){
+  if(!host.value||!user.value||!pass.value) return;
+  fetch(`${host.value}/get.php?username=${user.value}&password=${pass.value}&type=m3u_plus`)
+    .then(r=>r.text())
+    .then(t=>{
+      parse(t);
+      login.style.display="none";
+    })
+    .catch(()=>alert("Servidor bloqueou navegador — use arquivo M3U ou APK"));
 }
 
 function show(tipo){
   viewer.style.display="block";
-  visiveis=canais.filter(c=>c.g.includes(tipo));
-  render(visiveis,tipo);
-}
-
-function render(lista,tipo){
   grid.innerHTML="";
-  lista.slice(0,300).forEach(c=>{
-    const isFav=fav.includes(c.n);
+  canais.filter(c=>c.g.includes(tipo)).slice(0,200).forEach(c=>{
     grid.innerHTML+=`
-    <div class="item">
-      <img src="${c.lg}" onerror="this.src='https://via.placeholder.com/150'"
-           onclick="play('${c.u}')">
-      <div class="${tipo.toLowerCase()}">${c.n}</div>
-      <button class="star" onclick="toggleFav('${c.n}')">
-        ${isFav?"★ Favorito":"☆ Favoritar"}
-      </button>
+    <div class="item" onclick="play('${c.u}')">
+      <img src="${c.lg}" onerror="this.src='https://via.placeholder.com/150'">
+      <div style="padding:5px">${c.n}</div>
     </div>`;
   });
 }
 
-function play(url){
+function play(u){
   player.style.display="flex";
-  player.innerHTML=`<video src="${url}" controls autoplay></video>`;
-}
-
-function toggleFav(n){
-  fav=fav.includes(n)?fav.filter(x=>x!==n):[...fav,n];
-  localStorage.setItem("fav",JSON.stringify(fav));
+  player.innerHTML=`<video src="${u}" controls autoplay></video>`;
 }
 
 function showFav(){
   viewer.style.display="block";
-  render(canais.filter(c=>fav.includes(c.n)),"tv");
+  grid.innerHTML="";
+  canais.filter(c=>fav.includes(c.n)).forEach(c=>{
+    grid.innerHTML+=`<div class="item">${c.n}</div>`;
+  });
 }
-
-function buscar(t){
-  render(visiveis.filter(c=>c.n.toLowerCase().includes(t.toLowerCase())),"tv");
-}
-
-document.addEventListener("keydown",e=>{
-  if(e.key==="Escape") closePlayer();
-});
-
-load();
 </script>
 
 </body>
-    </html>
+</html>
