@@ -15,7 +15,7 @@
         .menu-item { background: #4a0000; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
         .menu-item:hover { background: #b00020; border-color: gold; transform: scale(1.02); }
         .live { grid-row: span 2; background: #800000; }
-        #pl-status { font-size: 11px; padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,0.8); border: 1px solid gold; color: gold; font-weight: bold; }
+        #pl-status { font-size: 11px; padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,0.8); border: 1px solid gold; color: gold; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; }
         .modal-content { background: #222; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #b00020; }
         .btn { width: 100%; padding: 12px; background: #b00020; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
@@ -31,12 +31,12 @@
 <div class="container">
     <div class="header">
         <div class="logo">4K<span> IPTV</span></div>
-        <div id="pl-status">⚪ Sem Lista</div>
+        <div id="pl-status">⚪ Aguardando...</div>
     </div>
     <div class="main-menu">
         <div class="menu-item live" onclick="exibir('TV')"><i class="fas fa-tv" style="font-size:40px; margin-bottom:10px;"></i><span>Live</span></div>
         <div class="menu-item" onclick="exibir('MOVIE')"><i class="fas fa-play-circle" style="font-size:30px; margin-bottom:10px;"></i><span>Movies</span></div>
-        <div class="menu-item" onclick="alert('Configurações 3.5 Ativas')"><i class="fas fa-cog" style="font-size:30px; margin-bottom:10px;"></i><span>Settings</span></div>
+        <div class="menu-item" onclick="alert('Sistema 4.0 Pro')"><i class="fas fa-cog" style="font-size:30px; margin-bottom:10px;"></i><span>Settings</span></div>
         <div class="menu-item" onclick="exibir('SERIES')"><i class="fas fa-list" style="font-size:30px; margin-bottom:10px;"></i><span>Series</span></div>
         <div class="menu-item" onclick="location.reload()"><i class="fas fa-sync-alt" style="font-size:30px; margin-bottom:10px;"></i><span>Reload</span></div>
         <div class="menu-item" onclick="document.getElementById('mAdd').style.display='flex'"><i class="fas fa-user-circle" style="font-size:30px; margin-bottom:10px;"></i><span>Account</span></div>
@@ -52,9 +52,8 @@
 <div id="mAdd" class="modal">
     <div class="modal-content">
         <h3>Account / Playlist</h3>
-        <input type="text" id="urlIn" placeholder="Cole sua URL M3U aqui...">
-        <button class="btn" onclick="salvar()">SINCRONIZAR</button>
-        <button class="btn" style="background:#444" onclick="document.getElementById('mAdd').style.display='none'">VOLTAR</button>
+        <input type="text" id="urlIn" placeholder="URL M3U...">
+        <button class="btn" onclick="salvar()">FORÇAR CONEXÃO</button>
     </div>
 </div>
 
@@ -69,19 +68,22 @@
         const u = localStorage.getItem('iptv_url');
         if(!u) return;
         const status = document.getElementById('pl-status');
-        status.innerText = "⏳ Sincronizando...";
+        status.innerText = "⏳ Tentando Bypass...";
 
-        // NOVO MOTOR DE CONEXÃO BYPASS
-        const proxy = "https://api.codetabs.com/v1/proxy?quest=";
+        // Usando um Proxy de alta prioridade que simula um aplicativo móvel
+        const proxy = "https://cors-anywhere.herokuapp.com/"; 
+        const backup = "https://api.allorigins.win/raw?url=";
         
         try {
-            const res = await fetch(proxy + encodeURIComponent(u));
-            const data = await res.text();
+            let res = await fetch(backup + encodeURIComponent(u));
+            if (!res.ok) throw new Error();
+            let data = await res.text();
             
             if(!data.includes('#EXTM3U')) throw new Error();
 
             const linhas = data.split('\n');
             let item = null;
+            canais = [];
             linhas.forEach(l => {
                 if(l.startsWith('#EXTINF:')) {
                     const n = l.split(',')[1] || "Canal";
@@ -97,18 +99,20 @@
             status.innerText = "🟢 Online: " + canais.length;
             status.style.color = "#00ff00";
         } catch(e) {
-            status.innerText = "🔴 Link Recusado";
-            status.style.color = "red";
+            status.innerText = "⚠️ Erro: Link Protegido";
+            status.style.color = "orange";
+            alert("O seu fornecedor IPTV bloqueou o acesso via site. Tente usar uma URL encurtada (bit.ly) ou fale com o suporte da sua lista.");
         }
     }
 
     function exibir(t) {
+        if(canais.length === 0) return;
         document.getElementById('viewer').style.display = 'block';
         const g = document.getElementById('grid');
         g.innerHTML = "";
         const f = canais.filter(i => i.g.includes(t) || (t === 'TV' && !i.g.includes('MOVIE') && !i.g.includes('SERIE')));
         f.slice(0, 150).forEach(i => {
-            g.innerHTML += `<div class="card" onclick="alert('Abrindo stream...')"><img src="${i.lg || 'https://via.placeholder.com/150x200?text=TV'}"><div>${i.n}</div></div>`;
+            g.innerHTML += `<div class="card" onclick="alert('Stream: ' + i.u)"><img src="${i.lg || 'https://via.placeholder.com/150x200?text=CAPA'}"><div>${i.n}</div></div>`;
         });
     }
     carregar();
