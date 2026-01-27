@@ -11,20 +11,19 @@
         .container { display: flex; flex-direction: column; height: 100%; padding: 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { font-size: 26px; font-weight: 800; color: #00d4ff; text-transform: uppercase; }
-        .logo span { color: white; }
         .main-menu { display: grid; grid-template-columns: 1.5fr 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 12px; flex-grow: 1; }
-        .menu-item { background: #4a0000; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
-        .menu-item:hover { background: #b00020; transform: scale(1.03); border-color: gold; }
-        .menu-item i { font-size: 45px; margin-bottom: 10px; }
-        .live { grid-row: span 2; background: #800000; } 
-        #content-viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05010a; z-index: 2000; overflow-y: auto; padding: 20px; }
-        .grid-capas { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-        .capa-card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; cursor: pointer; }
-        .capa-card img { width: 100%; height: 180px; object-fit: cover; }
+        .menu-item { background: #4a0000; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .menu-item:hover { background: #b00020; border-color: gold; }
+        .live { grid-row: span 2; background: #800000; }
+        #pl-status { font-size: 11px; padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,0.5); }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; }
-        .modal-content { background: #222; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px; border: 1px solid #b00020; }
+        .modal-content { background: #222; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #b00020; }
         .btn { width: 100%; padding: 12px; background: #b00020; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; width: 100%; }
+        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05010a; z-index: 2000; overflow-y: auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+        .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; font-size: 10px; text-align: center; }
+        .card img { width: 100%; height: 150px; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -32,80 +31,87 @@
 <div class="container">
     <div class="header">
         <div class="logo">4K<span> IPTV</span></div>
-        <div id="pl-status" style="font-size: 11px; color: #888;">Playlist: Desconectada</div>
+        <div id="pl-status">⚪ Offline</div>
     </div>
-
     <div class="main-menu">
-        <div class="menu-item live" onclick="abrir('TV')"><i class="fas fa-tv"></i><span>Live</span></div>
-        <div class="menu-item" onclick="abrir('MOVIE')"><i class="fas fa-play-circle"></i><span>Movies</span></div>
-        <div class="menu-item" onclick="document.getElementById('modalConfig').style.display='flex'"><i class="fas fa-cog"></i><span>Settings</span></div>
-        <div class="menu-item" onclick="abrir('SERIES')"><i class="fas fa-list"></i><span>Series</span></div>
+        <div class="menu-item live" onclick="exibir('TV')"><i class="fas fa-tv"></i><span>Live</span></div>
+        <div class="menu-item" onclick="exibir('MOVIE')"><i class="fas fa-play-circle"></i><span>Movies</span></div>
+        <div class="menu-item" onclick="alert('v3.5 Pro')"><i class="fas fa-cog"></i><span>Settings</span></div>
+        <div class="menu-item" onclick="exibir('SERIES')"><i class="fas fa-list"></i><span>Series</span></div>
         <div class="menu-item" onclick="location.reload()"><i class="fas fa-sync-alt"></i><span>Reload</span></div>
-        <div class="menu-item" onclick="document.getElementById('modalAdd').style.display='flex'"><i class="fas fa-user-circle"></i><span>Account</span></div>
-        <div class="menu-item" style="background: #222;" onclick="alert('Saindo...')"><i class="fas fa-sign-out-alt"></i><span>Exit</span></div>
+        <div class="menu-item" onclick="document.getElementById('mAdd').style.display='flex'"><i class="fas fa-user-circle"></i><span>Account</span></div>
+        <div class="menu-item" style="background: #222;" onclick="localStorage.clear();location.reload();"><i class="fas fa-sign-out-alt"></i><span>Exit</span></div>
     </div>
 </div>
 
-<div id="content-viewer">
-    <button onclick="document.getElementById('content-viewer').style.display='none'" class="btn" style="width: 100px; margin-bottom: 20px;">VOLTAR</button>
-    <div id="grid-capas" class="grid-capas"></div>
+<div id="viewer">
+    <button onclick="document.getElementById('viewer').style.display='none'" class="btn" style="width: 100px;">VOLTAR</button>
+    <div id="grid" class="grid" style="margin-top:20px;"></div>
 </div>
 
-<div id="modalAdd" class="modal">
+<div id="mAdd" class="modal">
     <div class="modal-content">
-        <h3>Conectar Lista</h3>
-        <input type="text" id="urlInput" placeholder="Cole sua URL M3U aqui...">
-        <button class="btn" onclick="salvar()">SINCRONIZAR</button>
+        <h3>Sincronizar Lista</h3>
+        <input type="text" id="urlIn" placeholder="Cole sua URL M3U...">
+        <button class="btn" onclick="salvar()">CONECTAR</button>
+        <button class="btn" style="background:#444" onclick="document.getElementById('mAdd').style.display='none'">CANCELAR</button>
     </div>
-</div>
-
-<div id="modalConfig" class="modal">
-    <div class="modal-content"><h3>Configurações</h3><button class="btn" onclick="location.reload()">LIMPAR TUDO</button></div>
 </div>
 
 <script>
-    let dados = [];
-    async function salvar() {
-        const url = document.getElementById('urlInput').value;
-        if(url) {
-            localStorage.setItem('url', url);
-            location.reload();
+    let canais = [];
+    function salvar() { const u = document.getElementById('urlIn').value; if(u){localStorage.setItem('u', u); location.reload();} }
+
+    async function carregar() {
+        const u = localStorage.getItem('u');
+        if(!u) return;
+        const status = document.getElementById('pl-status');
+        status.innerText = "🔵 Conectando...";
+
+        // TENTATIVA 1: Proxy Direto
+        try {
+            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(u));
+            const j = await r.json();
+            parsear(j.contents);
+        } catch(e) {
+            // TENTATIVA 2: Backup Proxy
+            try {
+                const r2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(u));
+                const t2 = await r2.text();
+                parsear(t2);
+            } catch(e2) {
+                status.innerText = "🔴 Erro Crítico";
+                status.style.color = "red";
+            }
         }
     }
 
-    async function carregar() {
-        const url = localStorage.getItem('url');
-        if(!url) return;
-        document.getElementById('pl-status').innerText = "CARREGANDO...";
-        try {
-            // Usando um proxy diferente e mais rápido
-            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-            const json = await res.json();
-            const linhas = json.contents.split('\n');
-            let item = null;
-            linhas.forEach(l => {
-                if(l.startsWith('#EXTINF:')) {
-                    const nome = l.split(',')[1] || "Sem nome";
-                    const logo = l.match(/tvg-logo="([^"]+)"/)?.[1] || "";
-                    const grupo = l.match(/group-title="([^"]+)"/)?.[1] || "Canais";
-                    item = { nome, logo, grupo: grupo.toUpperCase() };
-                } else if(l.startsWith('http') && item) {
-                    item.link = l.trim();
-                    dados.push(item);
-                    item = null;
-                }
-            });
-            document.getElementById('pl-status').innerText = "ONLINE (" + dados.length + ")";
-        } catch(e) { document.getElementById('pl-status').innerText = "ERRO DE CONEXÃO"; }
+    function parsear(data) {
+        const linhas = data.split('\n');
+        let obj = null;
+        linhas.forEach(l => {
+            if(l.startsWith('#EXTINF:')) {
+                const n = l.split(',')[1] || "Canal";
+                const lg = l.match(/tvg-logo="([^"]+)"/)?.[1] || "";
+                const g = l.match(/group-title="([^"]+)"/)?.[1] || "Canais";
+                obj = { n, lg, g: g.toUpperCase() };
+            } else if(l.startsWith('http') && obj) {
+                obj.u = l.trim();
+                canais.push(obj);
+                obj = null;
+            }
+        });
+        document.getElementById('pl-status').innerText = "🟢 Online: " + canais.length;
+        document.getElementById('pl-status').style.color = "lime";
     }
 
-    function abrir(tipo) {
-        document.getElementById('content-viewer').style.display = 'block';
-        const grid = document.getElementById('grid-capas');
-        grid.innerHTML = "";
-        const lista = dados.filter(i => i.grupo.includes(tipo) || (tipo === 'TV' && !i.grupo.includes('MOVIE') && !i.grupo.includes('SERIE')));
-        lista.slice(0, 150).forEach(i => {
-            grid.innerHTML += `<div class="capa-card" onclick="alert('Abrindo: '+ '${i.nome}')"><img src="${i.logo || 'https://via.placeholder.com/150x200?text=SINAL'}"><div>${i.nome}</div></div>`;
+    function exibir(t) {
+        document.getElementById('viewer').style.display = 'block';
+        const g = document.getElementById('grid');
+        g.innerHTML = "";
+        const f = canais.filter(i => i.g.includes(t) || (t === 'TV' && !i.g.includes('MOVIE') && !i.g.includes('SERIE')));
+        f.slice(0, 100).forEach(i => {
+            g.innerHTML += `<div class="card"><img src="${i.lg || 'https://via.placeholder.com/150x200?text=TV'}"><div>${i.n}</div></div>`;
         });
     }
     carregar();
