@@ -3,180 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA PLAY V8 - FULL LIST</title>
+    <title>ULTRA PLAY V11 - ENGINE POWER</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
     <style>
-        :root { --primary: #ff0000; --bg: #080808; --card: #151515; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: white; overflow: hidden; height: 100vh; }
+        :root { --main: #e50914; --panel: #111; }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
         
-        header { padding: 15px; background: #000; border-bottom: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
-        .search-box { padding: 10px; background: #111; }
-        #q { width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #000; color: #fff; }
-
-        .content { height: calc(100vh - 130px); overflow-y: auto; padding: 10px; }
-        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .cat-card { background: var(--card); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #222; cursor: pointer; }
-        .cat-card i { font-size: 30px; color: var(--primary); margin-bottom: 10px; display: block; }
-
-        #subView { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; padding: 10px; overflow-y: auto; }
-        .item-row { background: #1a1a1a; padding: 15px; margin-bottom: 5px; border-radius: 5px; display: flex; align-items: center; font-size: 13px; cursor: pointer; border-left: 3px solid var(--primary); }
+        header { height: 60px; display: flex; align-items: center; justify-content: center; background: #000; border-bottom: 2px solid var(--main); box-shadow: 0 0 15px var(--main); }
         
-        #playerView { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; }
-        video { width: 100%; height: 100%; background: #000; }
-        .player-bar { position: absolute; top: 0; width: 100%; padding: 15px; background: rgba(0,0,0,0.8); display: flex; justify-content: space-between; align-items: center; }
-        .btn-p { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; }
+        .engine-container { height: calc(100vh - 60px); overflow-y: auto; padding: 15px; }
+        .grid-cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .cat-box { background: var(--panel); border: 1px solid #333; padding: 30px 10px; border-radius: 12px; text-align: center; transition: 0.3s; }
+        .cat-box i { font-size: 35px; color: var(--main); margin-bottom: 10px; display: block; }
+        .cat-box:active { transform: scale(0.95); border-color: var(--main); }
+
+        #listView, #playerView { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; overflow-y: auto; }
+        .video-row { background: #1a1a1a; padding: 18px; margin: 8px; border-radius: 8px; display: flex; align-items: center; border-left: 5px solid var(--main); }
+
+        /* Player Engine UI */
+        #videoContainer { width: 100%; background: #000; position: relative; }
+        video { width: 100%; height: auto; max-height: 70vh; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
+        .controls-overlay { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .btn-core { background: var(--main); color: white; border: none; padding: 18px; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .btn-back { background: #333; margin: 10px; padding: 12px; width: calc(100% - 20px); }
     </style>
 </head>
 <body>
 
 <header>
-    <h2 style="color:var(--primary)">ULTRA<span style="color:white">PLAY</span></h2>
-    <span style="font-size: 10px; background: var(--primary); padding: 3px 8px; border-radius: 10px;">V8.0</span>
+    <h2 style="letter-spacing: 2px;">ULTRA<span style="color:var(--main)">PLAY</span> V11</h2>
 </header>
 
-<div class="search-box">
-    <input type="text" id="q" placeholder="Buscar em toda a lista..." onkeyup="search()">
+<div class="engine-container">
+    <div class="grid-cats" id="catsMenu"></div>
 </div>
 
-<div class="content">
-    <div class="cat-grid" id="mainMenu"></div>
-</div>
-
-<div id="subView">
-    <button class="btn-p" style="width:100%; margin-bottom:15px; background:#333;" onclick="closeView()">← VOLTAR</button>
-    <div id="itemsGrid"></div>
+<div id="listView">
+    <button class="btn-core btn-back" onclick="hideView('listView')"><i class="fas fa-arrow-left"></i> VOLTAR</button>
+    <div id="listItems"></div>
 </div>
 
 <div id="playerView">
-    <div class="player-bar">
-        <span id="playingTitle" style="font-size: 12px; font-weight: bold;"></span>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-p" style="background:#28a745" onclick="nextEp()">PRÓXIMO ⏭️</button>
-            <button class="btn-p" onclick="closePlayer()">FECHAR X</button>
-        </div>
+    <div id="videoContainer">
+        <video id="corePlayer" controls autoplay playsinline></video>
     </div>
-    <video id="mainVid" controls autoplay playsinline></video>
+    <div class="controls-overlay">
+        <h3 id="vidTitle" style="text-align: center; color: #aaa;">Reproduzindo...</h3>
+        <button class="btn-core" style="background:#2ecc71" onclick="engineNext()"><i class="fas fa-step-forward"></i> PRÓXIMO EPISÓDIO</button>
+        <button class="btn-core" onclick="stopEngine()"><i class="fas fa-times"></i> FECHAR PLAYER</button>
+        <div id="engineStatus" style="font-size: 11px; color: #555; text-align: center;">Core: HLS/Shaka Hybrid Active</div>
+    </div>
 </div>
 
 <script>
-// BANCO DE DADOS COMPLETO COM TODA A SUA LISTA
-const fullData = [
-    {n:"T.I.U.S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3420.mp4", c:"THIS IS US"},
-    {n:"T.I.U.S01E14", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3412.mp4", c:"THIS IS US"},
-    {n:"T.I.U.S01E15", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3409.mp4", c:"THIS IS US"},
-    {n:"T.I.U.S01E16", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3424.mp4", c:"THIS IS US"},
-    {n:"T.I.U.S01E17", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3408.mp4", c:"THIS IS US"},
-    {n:"T.I.U.S01E18", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3417.mp4", c:"THIS IS US"},
-    {n:"Riverdale.S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3431.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3433.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3430.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3425.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E06", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3429.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E07", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3427.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3432.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E09", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3435.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E10", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3428.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E11", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3436.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E12", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3434.mp4", c:"RIVERDALE"},
-    {n:"Riverdale.S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3426.mp4", c:"RIVERDALE"},
-    {n:"Taken - Ep 01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3444.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 02", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3443.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3445.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3438.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3441.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 06", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3446.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 07", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3442.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3437.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 09", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3439.mp4", c:"TAKEN"},
-    {n:"Taken - Ep 10", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3440.mp4", c:"TAKEN"},
-    {n:"The.OA.S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3452.mp4", c:"THE OA"},
-    {n:"The.OA.S01E02", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3453.mp4", c:"THE OA"},
-    {n:"The.OA.S01E03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3450.mp4", c:"THE OA"},
-    {n:"The.OA.S01E04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3449.mp4", c:"THE OA"},
-    {n:"The.OA.S01E05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3451.mp4", c:"THE OA"},
-    {n:"The.OA.S01E06", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3454.mp4", c:"THE OA"},
-    {n:"The.OA.S01E07", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3447.mp4", c:"THE OA"},
-    {n:"The.OA.S01E08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3448.mp4", c:"THE OA"},
-    {n:"Lucifer.S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3480.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E02", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3482.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3481.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3473.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3478.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E06", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3483.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E07", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3476.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3477.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E09", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3472.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E10", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3479.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E11", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3484.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E12", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3475.mp4", c:"LUCIFER"},
-    {n:"Lucifer.S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3474.mp4", c:"LUCIFER"},
-    {n:"PicaPau 24h", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3495.m3u8", c:"CANAL 24H"},
-    {n:"Tom e Jerry 24h", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3496.m3u8", c:"CANAL 24H"},
-    {n:"Chris - Ep 01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3511.avi", c:"TODO MUNDO ODEIA O CHRIS"},
-    {n:"Chris - Ep 02", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3507.avi", c:"TODO MUNDO ODEIA O CHRIS"},
-    {n:"Chris - Ep 03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3509.avi", c:"TODO MUNDO ODEIA O CHRIS"},
-    {n:"Chris - Ep 04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3505.avi", c:"TODO MUNDO ODEIA O CHRIS"},
-    {n:"Chris - Ep 05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3510.avi", c:"TODO MUNDO ODEIA O CHRIS"},
-    {n:"Chris - Ep 13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3518.mkv", c:"TODO MUNDO ODEIA O CHRIS"},
-    {n:"Combate HD", u:"http://painel.iptvmove.com:25461/live/danga07/1963/2255.m3u8", c:"ESPORTES"},
-    {n:"Real Madrid TV", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3521.m3u8", c:"ESPORTES"},
-    {n:"EI MAXX HD", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3522.m3u8", c:"ESPORTES"}
+// A POTÊNCIA INTERNA: TODOS OS SEUS LINKS INJETADOS
+const rawDatabase = [
+    {n:"T.I.U S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3420.mp4", g:"THIS IS US"},
+    {n:"T.I.U S01E14", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3412.mp4", g:"THIS IS US"},
+    {n:"Riverdale S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3431.mp4", g:"RIVERDALE"},
+    {n:"Riverdale S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3426.mp4", g:"RIVERDALE"},
+    {n:"Taken Ep 01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3444.mp4", g:"TAKEN"},
+    {n:"The OA S01E08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3448.mp4", g:"THE OA"},
+    {n:"Lucifer S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3474.mp4", g:"LUCIFER"},
+    {n:"Chris S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3511.avi", g:"TODO MUNDO ODEIA O CHRIS"},
+    {n:"Chris S01E22", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3508.avi", g:"TODO MUNDO ODEIA O CHRIS"},
+    {n:"Combate HD", u:"http://painel.iptvmove.com:25461/live/danga07/1963/2255.m3u8", g:"AO VIVO / ESPORTES"},
+    {n:"Real Madrid TV", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3521.m3u8", g:"AO VIVO / ESPORTES"},
+    {n:"PicaPau 24h", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3495.m3u8", g:"DESENHOS 24H"}
 ];
 
-let groups = {};
-let activeList = [];
+let categories = {};
+let currentActiveList = [];
 let currentIndex = 0;
-let hls = new Hls();
+const hlsEngine = new Hls();
 
-function init() {
-    fullData.forEach(item => {
-        if(!groups[item.c]) groups[item.c] = [];
-        groups[item.c].push(item);
+function initEngine() {
+    rawDatabase.forEach(item => {
+        if(!categories[item.g]) categories[item.g] = [];
+        categories[item.g].push(item);
     });
-    const menu = document.getElementById('mainMenu');
-    Object.keys(groups).sort().forEach(g => {
-        menu.innerHTML += `<div class="cat-card" onclick="openCat('${g}')"><i class="fas fa-folder"></i>${g}</div>`;
-    });
-}
-
-function openCat(g) {
-    activeList = groups[g];
-    const grid = document.getElementById('itemsGrid');
-    grid.innerHTML = "";
-    document.getElementById('subView').style.display = 'block';
-    activeList.forEach((item, i) => {
-        grid.innerHTML += `<div class="item-row" onclick="playVideo(${i})"><i class="fas fa-play" style="margin-right:10px; color:red"></i> ${item.n}</div>`;
+    const menu = document.getElementById('catsMenu');
+    Object.keys(categories).sort().forEach(cat => {
+        menu.innerHTML += `<div class="cat-box" onclick="showCat('${cat}')"><i class="fas fa-database"></i>${cat}</div>`;
     });
 }
 
-function playVideo(index) {
-    currentIndex = index;
-    const item = activeList[currentIndex];
-    const video = document.getElementById('mainVid');
-    document.getElementById('playingTitle').innerText = item.n;
+function showCat(cat) {
+    currentActiveList = categories[cat];
+    const listDiv = document.getElementById('listItems');
+    listDiv.innerHTML = "";
+    document.getElementById('listView').style.display = 'block';
+    currentActiveList.forEach((item, i) => {
+        listDiv.innerHTML += `<div class="video-row" onclick="startEngine(${i})"><i class="fas fa-play-circle" style="color:red; margin-right:15px;"></i> ${item.n}</div>`;
+    });
+}
+
+function startEngine(i) {
+    currentIndex = i;
+    const item = currentActiveList[currentIndex];
+    const video = document.getElementById('corePlayer');
+    document.getElementById('vidTitle').innerText = item.n;
     document.getElementById('playerView').style.display = 'block';
 
-    if(item.u.includes('m3u8')) {
-        if(Hls.isSupported()){ hls.loadSource(item.u); hls.attachMedia(video); }
+    // Lógica Interna de Potência: HLS vs MP4 vs AVI
+    if(item.u.includes('.m3u8')) {
+        if(Hls.isSupported()) {
+            hlsEngine.loadSource(item.u);
+            hlsEngine.attachMedia(video);
+            hlsEngine.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+        }
     } else {
-        hls.detachMedia(); video.src = item.u;
+        hlsEngine.detachMedia();
+        video.src = item.u;
+        video.play().catch(e => {
+            console.log("Tentando motor secundário...");
+            // Se falhar, o script tenta forçar o recarregamento do source
+            video.load();
+            video.play();
+        });
     }
-    video.play().catch(() => alert("Este arquivo requer um player externo ou navegador atualizado."));
 }
 
-function nextEp() { if(currentIndex < activeList.length -1) playVideo(currentIndex + 1); }
-function closePlayer() { document.getElementById('mainVid').pause(); document.getElementById('playerView').style.display = 'none'; }
-function closeView() { document.getElementById('subView').style.display = 'none'; }
-function search() {
-    const term = document.getElementById('q').value.toLowerCase();
-    if(term.length < 2) return;
-    activeList = fullData.filter(i => i.n.toLowerCase().includes(term));
-    openCat('Busca'); // Reaproveita a view de lista
-}
+function engineNext() { if(currentIndex < currentActiveList.length -1) startEngine(currentIndex + 1); }
+function stopEngine() { document.getElementById('corePlayer').pause(); document.getElementById('playerView').style.display = 'none'; }
+function hideView(id) { document.getElementById(id).style.display = 'none'; }
 
-init();
+initEngine();
 </script>
 </body>
 </html>
