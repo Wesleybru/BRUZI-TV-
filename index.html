@@ -1,254 +1,296 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>BOT MACHINE AI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-:root{
-  --bg:#0d0d12;
-  --card:#15151e;
-  --pink:#e91e63;
-  --green:#00e676;
-}
-
-body{
-  margin:0;
-  background:var(--bg);
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
-.app{
-  max-width:460px;
-  margin:20px auto;
-  background:var(--card);
-  border-radius:16px;
-  padding:20px;
-  border:1px solid #222;
-}
-
-/* LOGO */
-.logo{
-  text-align:center;
-  margin-bottom:20px;
-}
-.logo h1{
-  margin:0;
-  font-size:28px;
-  letter-spacing:3px;
-}
-.logo .bot{color:#fff;}
-.logo .machine{color:var(--pink);}
-.logo .ai{
-  color:var(--green);
-  font-size:12px;
-  vertical-align:super;
-}
-
-/* BOTÕES */
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.btn{
-  padding:14px;
-  border-radius:10px;
-  border:1px solid #333;
-  background:#111;
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
-}
-.btn:active{transform:scale(.96);}
-.btn.live{
-  margin-top:10px;
-  border-color:var(--pink);
-  color:var(--pink);
-}
-
-/* MONITOR */
-.monitor{
-  background:#0a0a0f;
-  border-radius:10px;
-  padding:15px;
-  margin-top:15px;
-  text-align:center;
-}
-#cor{
-  font-size:18px;
-  font-weight:bold;
-}
-
-/* HISTÓRICO */
-.historico{
-  display:flex;
-  gap:6px;
-  justify-content:center;
-  margin-top:10px;
-}
-.bola{
-  width:22px;
-  height:22px;
-  border-radius:50%;
-}
-.red{background:#f44336;}
-.black{background:#333;border:1px solid #444;}
-.white{background:#fff;box-shadow:0 0 6px #fff;}
-
-/* RESULTADO */
-.resultado{
-  margin-top:15px;
-  padding:15px;
-  border-radius:10px;
-  background:#000;
-  border:1px solid var(--pink);
-  text-align:center;
-}
-#hora{
-  font-size:26px;
-  font-weight:900;
-  color:var(--green);
-  margin-top:6px;
-}
-
-/* LISTA */
-.lista{
-  margin-top:15px;
-  background:#0a0a0f;
-  border-radius:10px;
-  padding:12px;
-  border:1px solid #222;
-}
-.lista h4{
-  margin:0 0 8px;
-  font-size:11px;
-  color:#aaa;
-}
-.sinal{
-  font-size:12px;
-  padding:6px 0;
-  border-bottom:1px solid #1a1a1a;
-  color:var(--green);
-}
-
-/* IA */
-.ia{
-  margin-top:15px;
-  text-align:center;
-  font-size:13px;
-}
-.ia span{
-  color:var(--pink);
-  font-weight:bold;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTRA PLAY V5.2 - LISTA COMPLETA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root { --primary: #e50914; --bg: #0a0a0a; --card: #141414; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: white; overflow: hidden; height: 100vh; }
+        header { padding: 15px; background: linear-gradient(to bottom, #000, transparent); }
+        .search-container { position: relative; padding: 0 15px; }
+        .search-container input { width: 100%; padding: 12px 40px; border-radius: 8px; border: none; background: #222; color: white; }
+        .content-area { height: calc(100vh - 130px); overflow-y: auto; padding: 15px; }
+        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .cat-item { background: var(--card); padding: 20px 10px; border-radius: 10px; text-align: center; border: 1px solid #222; cursor: pointer; }
+        .cat-item i { font-size: 24px; color: var(--primary); margin-bottom: 8px; display: block; }
+        #subView { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; padding: 10px; overflow-y: auto; }
+        .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+        .item-card { background: #111; border-radius: 5px; padding: 15px; font-size: 12px; text-align: center; border: 1px solid #222; }
+        #playerOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; }
+        video { width: 100%; height: 100%; }
+        .controls-top { position: absolute; top: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1001; background: rgba(0,0,0,0.7); }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; }
+        .btn-next { background: #2ecc71; margin-right: 10px; }
+    </style>
 </head>
-
 <body>
 
-<div class="app">
+<header>
+    <h2 style="color:var(--primary); text-align:center;">ULTRA PLAY <span style="color:white">V5.2</span></h2>
+</header>
 
-  <div class="logo">
-    <h1>
-      <span class="bot">BOT</span>
-      <span class="machine">MACHINE</span>
-      <span class="ai">AI</span>
-    </h1>
-  </div>
+<div class="search-container">
+    <input type="text" id="q" placeholder="Buscar episódio ou canal..." onkeyup="search()">
+</div>
 
-  <div class="grid">
-    <button class="btn" onclick="gerarCor()">📊 GERAR COR</button>
-    <button class="btn" onclick="gerarBranco()">🎯 GERAR BRANCO</button>
-  </div>
+<div class="content-area">
+    <div class="cat-grid" id="mainMenu"></div>
+</div>
 
-  <button class="btn live" onclick="toggleLive()">🔴 ATIVAR AO VIVO</button>
+<div id="subView">
+    <button style="width:100%; padding:15px; background:#333; color:white; border:none; margin-bottom:10px;" onclick="closeView()">← VOLTAR ÀS CATEGORIAS</button>
+    <div class="video-grid" id="itemsGrid"></div>
+</div>
 
-  <div class="monitor">
-    <div id="cor">AGUARDANDO...</div>
-    <div class="historico" id="hist"></div>
-  </div>
-
-  <div class="resultado">
-    PRÓXIMO BRANCO
-    <div id="hora">00:00</div>
-  </div>
-
-  <div class="lista">
-    <h4>PRÓXIMOS SINAIS</h4>
-    <div id="lista"></div>
-  </div>
-
-  <div class="ia">
-    IA ATIVA <span id="nivel">99.1</span>
-  </div>
-
+<div id="playerOverlay">
+    <div class="controls-top">
+        <span id="nowPlaying" style="font-size:12px;"></span>
+        <div>
+            <button class="btn-action btn-next" id="nextBtn" onclick="playNext()">PRÓXIMO ⏭️</button>
+            <button class="btn-action" onclick="stopPlayer()">FECHAR X</button>
+        </div>
+    </div>
+    <video id="videoPlayer" controls autoplay playsinline></video>
 </div>
 
 <script>
-let nivel=99.1;
-let live=false;
-let loop=null;
-const somas=[4,8,12,15,20,25];
+// AQUI ESTÁ CADA UM DOS LINKS QUE VOCÊ ENVIOU - SEM CORTES
+const rawData = `
+#EXTINF:-1,T.I.U.S01E13
+http://painel.iptvmove.com:25461/movie/danga07/1963/3420.mp4
+#EXTINF:-1,T.I.U.S01E14
+http://painel.iptvmove.com:25461/movie/danga07/1963/3412.mp4
+#EXTINF:-1,T.I.U.S01E15
+http://painel.iptvmove.com:25461/movie/danga07/1963/3409.mp4
+#EXTINF:-1,T.I.U.S01E16
+http://painel.iptvmove.com:25461/movie/danga07/1963/3424.mp4
+#EXTINF:-1,T.I.U.S01E17
+http://painel.iptvmove.com:25461/movie/danga07/1963/3408.mp4
+#EXTINF:-1,T.I.U.S01E18
+http://painel.iptvmove.com:25461/movie/danga07/1963/3417.mp4
+#EXTINF:-1,Riverdale.S01E01
+http://painel.iptvmove.com:25461/movie/danga07/1963/3431.mp4
+#EXTINF:-1,Riverdale.S01E03
+http://painel.iptvmove.com:25461/movie/danga07/1963/3433.mp4
+#EXTINF:-1,Riverdale.S01E04
+http://painel.iptvmove.com:25461/movie/danga07/1963/3430.mp4
+#EXTINF:-1,Riverdale.S01E05
+http://painel.iptvmove.com:25461/movie/danga07/1963/3425.mp4
+#EXTINF:-1,Riverdale.S01E06
+http://painel.iptvmove.com:25461/movie/danga07/1963/3429.mp4
+#EXTINF:-1,Riverdale.S01E07
+http://painel.iptvmove.com:25461/movie/danga07/1963/3427.mp4
+#EXTINF:-1,Riverdale.S01E08
+http://painel.iptvmove.com:25461/movie/danga07/1963/3432.mp4
+#EXTINF:-1,Riverdale.S01E09
+http://painel.iptvmove.com:25461/movie/danga07/1963/3435.mp4
+#EXTINF:-1,Riverdale.S01E10
+http://painel.iptvmove.com:25461/movie/danga07/1963/3428.mp4
+#EXTINF:-1,Riverdale.S01E11
+http://painel.iptvmove.com:25461/movie/danga07/1963/3436.mp4
+#EXTINF:-1,Riverdale.S01E12
+http://painel.iptvmove.com:25461/movie/danga07/1963/3434.mp4
+#EXTINF:-1,Riverdale.S01E13
+http://painel.iptvmove.com:25461/movie/danga07/1963/3426.mp4
+#EXTINF:-1,Taken - 01 - Beyond The Sky
+http://painel.iptvmove.com:25461/movie/danga07/1963/3444.mp4
+#EXTINF:-1,Taken - 02 - Jacob and Jesse
+http://painel.iptvmove.com:25461/movie/danga07/1963/3443.mp4
+#EXTINF:-1,Taken - 03 - High Hopes
+http://painel.iptvmove.com:25461/movie/danga07/1963/3445.mp4
+#EXTINF:-1,Taken - 04 - Acid Tests
+http://painel.iptvmove.com:25461/movie/danga07/1963/3438.mp4
+#EXTINF:-1,Taken - 05 - Maintenance
+http://painel.iptvmove.com:25461/movie/danga07/1963/3441.mp4
+#EXTINF:-1,Taken - 06 - Charlie and Lisa
+http://painel.iptvmove.com:25461/movie/danga07/1963/3446.mp4
+#EXTINF:-1,Taken - 07 - God's Equation
+http://painel.iptvmove.com:25461/movie/danga07/1963/3442.mp4
+#EXTINF:-1,Taken - 08 - Dropping the Dishes
+http://painel.iptvmove.com:25461/movie/danga07/1963/3437.mp4
+#EXTINF:-1,Taken - 09 - John
+http://painel.iptvmove.com:25461/movie/danga07/1963/3439.mp4
+#EXTINF:-1,Taken - 10 - Taken
+http://painel.iptvmove.com:25461/movie/danga07/1963/3440.mp4
+#EXTINF:-1,The.OA.S01E01
+http://painel.iptvmove.com:25461/movie/danga07/1963/3452.mp4
+#EXTINF:-1,The.OA.S01E02
+http://painel.iptvmove.com:25461/movie/danga07/1963/3453.mp4
+#EXTINF:-1,The.OA.S01E03
+http://painel.iptvmove.com:25461/movie/danga07/1963/3450.mp4
+#EXTINF:-1,The.OA.S01E04
+http://painel.iptvmove.com:25461/movie/danga07/1963/3449.mp4
+#EXTINF:-1,The.OA.S01E05
+http://painel.iptvmove.com:25461/movie/danga07/1963/3451.mp4
+#EXTINF:-1,The.OA.S01E06
+http://painel.iptvmove.com:25461/movie/danga07/1963/3454.mp4
+#EXTINF:-1,The.OA.S01E07
+http://painel.iptvmove.com:25461/movie/danga07/1963/3447.mp4
+#EXTINF:-1,The.OA.S01E08
+http://painel.iptvmove.com:25461/movie/danga07/1963/3448.mp4
+#EXTINF:-1,Lucifer.S01E01
+http://painel.iptvmove.com:25461/movie/danga07/1963/3480.mp4
+#EXTINF:-1,Lucifer.S01E02
+http://painel.iptvmove.com:25461/movie/danga07/1963/3482.mp4
+#EXTINF:-1,Lucifer.S01E03
+http://painel.iptvmove.com:25461/movie/danga07/1963/3481.mp4
+#EXTINF:-1,Lucifer.S01E04
+http://painel.iptvmove.com:25461/movie/danga07/1963/3473.mp4
+#EXTINF:-1,Lucifer.S01E05
+http://painel.iptvmove.com:25461/movie/danga07/1963/3478.mp4
+#EXTINF:-1,Lucifer.S01E06
+http://painel.iptvmove.com:25461/movie/danga07/1963/3483.mp4
+#EXTINF:-1,Lucifer.S01E07
+http://painel.iptvmove.com:25461/movie/danga07/1963/3476.mp4
+#EXTINF:-1,Lucifer.S01E08
+http://painel.iptvmove.com:25461/movie/danga07/1963/3477.mp4
+#EXTINF:-1,Lucifer.S01E09
+http://painel.iptvmove.com:25461/movie/danga07/1963/3472.mp4
+#EXTINF:-1,Lucifer.S01E10
+http://painel.iptvmove.com:25461/movie/danga07/1963/3479.mp4
+#EXTINF:-1,Lucifer.S01E11
+http://painel.iptvmove.com:25461/movie/danga07/1963/3484.mp4
+#EXTINF:-1,Lucifer.S01E12
+http://painel.iptvmove.com:25461/movie/danga07/1963/3475.mp4
+#EXTINF:-1,Lucifer.S01E13
+http://painel.iptvmove.com:25461/movie/danga07/1963/3474.mp4
+#EXTINF:-1,PicaPau 24h
+http://painel.iptvmove.com:25461/live/danga07/1963/3495.m3u8
+#EXTINF:-1,Tom e Jerry 24h
+http://painel.iptvmove.com:25461/live/danga07/1963/3496.m3u8
+#EXTINF:-1,Combate HD
+http://painel.iptvmove.com:25461/live/danga07/1963/2255.m3u8
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E01
+http://painel.iptvmove.com:25461/movie/danga07/1963/3511.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E02
+http://painel.iptvmove.com:25461/movie/danga07/1963/3507.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E03
+http://painel.iptvmove.com:25461/movie/danga07/1963/3509.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E04
+http://painel.iptvmove.com:25461/movie/danga07/1963/3505.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E05
+http://painel.iptvmove.com:25461/movie/danga07/1963/3510.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E06
+http://painel.iptvmove.com:25461/movie/danga07/1963/3501.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E07
+http://painel.iptvmove.com:25461/movie/danga07/1963/3512.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E08
+http://painel.iptvmove.com:25461/movie/danga07/1963/3502.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E09
+http://painel.iptvmove.com:25461/movie/danga07/1963/3513.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E10
+http://painel.iptvmove.com:25461/movie/danga07/1963/3517.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E11
+http://painel.iptvmove.com:25461/movie/danga07/1963/3514.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E12
+http://painel.iptvmove.com:25461/movie/danga07/1963/3498.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E15
+http://painel.iptvmove.com:25461/movie/danga07/1963/3499.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E16
+http://painel.iptvmove.com:25461/movie/danga07/1963/3500.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E17
+http://painel.iptvmove.com:25461/movie/danga07/1963/3506.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E18
+http://painel.iptvmove.com:25461/movie/danga07/1963/3504.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E19
+http://painel.iptvmove.com:25461/movie/danga07/1963/3503.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E20
+http://painel.iptvmove.com:25461/movie/danga07/1963/3516.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E21
+http://painel.iptvmove.com:25461/movie/danga07/1963/3515.avi
+#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E22
+http://painel.iptvmove.com:25461/movie/danga07/1963/3508.avi
+#EXTINF:-1,Todo Mundo Odeia o Chris 24h
+http://painel.iptvmove.com:25461/live/danga07/1963/3520.m3u8
+#EXTINF:-1,Real Madrid TV
+http://painel.iptvmove.com:25461/live/danga07/1963/3521.m3u8
+#EXTINF:-1,EI MAXX HD
+http://painel.iptvmove.com:25461/live/danga07/1963/3522.m3u8
+#EXTINF:-1,EI MAXX 2 HD
+http://painel.iptvmove.com:25461/live/danga07/1963/3525.m3u8
+`;
 
-function gerarCor(){
-  const r=Math.random();
-  const el=document.getElementById('cor');
-  if(r<0.48) el.innerHTML='🔴 VERMELHO';
-  else if(r<0.96) el.innerHTML='⚫ PRETO';
-  else el.innerHTML='⚪ BRANCO';
-  gerarHistorico();
-  subirIA();
+let db = [];
+let categories = {};
+let currentPlaylist = [];
+let currentIndex = 0;
+let hls = new Hls();
+
+function init() {
+    const lines = rawData.trim().split('\n');
+    let item = null;
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith('#EXTINF')) {
+            const name = lines[i].split(',')[1];
+            let group = "SÉRIES";
+            if(name.includes("T.I.U")) group = "THIS IS US";
+            else if(name.includes("Riverdale")) group = "RIVERDALE";
+            else if(name.includes("Lucifer")) group = "LUCIFER";
+            else if(name.includes("The.OA")) group = "THE OA";
+            else if(name.includes("Taken")) group = "TAKEN";
+            else if(name.includes("Chris")) group = "TODO MUNDO ODEIA O CHRIS";
+            else if(name.includes("MAX") || name.includes("Madrid") || name.includes("Combate")) group = "ESPORTES";
+            else if(name.includes("Pica") || name.includes("Jerry")) group = "DESENHOS 24H";
+            
+            item = { name: name.trim(), group: group, url: lines[i+1].trim() };
+            db.push(item);
+            if (!categories[item.group]) categories[item.group] = [];
+            categories[item.group].push(item);
+        }
+    }
+    renderMenu();
 }
 
-function gerarBranco(){
-  const base=new Date();
-  const lista=document.getElementById('lista');
-  lista.innerHTML='';
-  for(let i=0;i<5;i++){
-    const d=new Date(base.getTime()+somas[i]*60000);
-    const h=d.getHours().toString().padStart(2,'0')+':'+
-            d.getMinutes().toString().padStart(2,'0');
-    lista.innerHTML+=`<div class="sinal">⚪ Branco às ${h}</div>`;
-    if(i===0) document.getElementById('hora').innerText=h;
-  }
-  subirIA();
+function renderMenu() {
+    const menu = document.getElementById('mainMenu');
+    menu.innerHTML = "";
+    Object.keys(categories).sort().forEach(cat => {
+        menu.innerHTML += `<div class="cat-item" onclick="showCategory('${cat}')"><i class="fas fa-play"></i><span>${cat}</span></div>`;
+    });
 }
 
-function gerarHistorico(){
-  const h=document.getElementById('hist');
-  h.innerHTML='';
-  for(let i=0;i<8;i++){
-    const r=Math.random();
-    const cor=r<0.46?'red':r<0.92?'black':'white';
-    h.innerHTML+=`<div class="bola ${cor}"></div>`;
-  }
+function showCategory(cat) {
+    currentPlaylist = categories[cat];
+    renderItems(currentPlaylist);
 }
 
-function subirIA(){
-  nivel+=0.05;
-  if(nivel>100) nivel=100;
-  document.getElementById('nivel').innerText=nivel.toFixed(1);
+function renderItems(list) {
+    const grid = document.getElementById('itemsGrid');
+    grid.innerHTML = "";
+    document.getElementById('subView').style.display = 'block';
+    list.forEach((item, index) => {
+        grid.innerHTML += `<div class="item-card" onclick="startPlayer(${index})">${item.name}</div>`;
+    });
 }
 
-function toggleLive(){
-  const btn=document.querySelector('.btn.live');
-  if(!live){
-    live=true;
-    btn.innerText='🟢 AO VIVO ATIVO';
-    loop=setInterval(()=>{
-      gerarCor();
-      gerarBranco();
-    },12000);
-  }else{
-    live=false;
-    btn.innerText='🔴 ATIVAR AO VIVO';
-    clearInterval(loop);
-  }
+function startPlayer(index) {
+    currentIndex = index;
+    const item = currentPlaylist[currentIndex];
+    const video = document.getElementById('videoPlayer');
+    document.getElementById('nowPlaying').innerText = item.name;
+    document.getElementById('playerOverlay').style.display = 'block';
+    document.getElementById('nextBtn').style.display = currentIndex < currentPlaylist.length - 1 ? 'inline-block' : 'none';
+
+    if (item.url.includes('m3u8')) {
+        if (Hls.isSupported()) { hls.loadSource(item.url); hls.attachMedia(video); }
+    } else { hls.detachMedia(); video.src = item.url; }
 }
+
+function playNext() { if (currentIndex < currentPlaylist.length - 1) startPlayer(currentIndex + 1); }
+function stopPlayer() { document.getElementById('videoPlayer').pause(); document.getElementById('playerOverlay').style.display = 'none'; }
+function closeView() { document.getElementById('subView').style.display = 'none'; }
+function search() {
+    const val = document.getElementById('q').value.toLowerCase();
+    if(val.length < 2) return;
+    currentPlaylist = db.filter(i => i.name.toLowerCase().includes(val));
+    renderItems(currentPlaylist);
+}
+
+init();
 </script>
-
 </body>
 </html>
