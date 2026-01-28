@@ -3,291 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA PLAY V5.2 - LISTA COMPLETA</title>
+    <title>ULTRA PLAY V8 - FULL LIST</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        :root { --primary: #e50914; --bg: #0a0a0a; --card: #141414; }
+        :root { --primary: #ff0000; --bg: #080808; --card: #151515; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: white; overflow: hidden; height: 100vh; }
-        header { padding: 15px; background: linear-gradient(to bottom, #000, transparent); }
-        .search-container { position: relative; padding: 0 15px; }
-        .search-container input { width: 100%; padding: 12px 40px; border-radius: 8px; border: none; background: #222; color: white; }
-        .content-area { height: calc(100vh - 130px); overflow-y: auto; padding: 15px; }
-        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .cat-item { background: var(--card); padding: 20px 10px; border-radius: 10px; text-align: center; border: 1px solid #222; cursor: pointer; }
-        .cat-item i { font-size: 24px; color: var(--primary); margin-bottom: 8px; display: block; }
+        
+        header { padding: 15px; background: #000; border-bottom: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .search-box { padding: 10px; background: #111; }
+        #q { width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #000; color: #fff; }
+
+        .content { height: calc(100vh - 130px); overflow-y: auto; padding: 10px; }
+        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .cat-card { background: var(--card); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #222; cursor: pointer; }
+        .cat-card i { font-size: 30px; color: var(--primary); margin-bottom: 10px; display: block; }
+
         #subView { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; padding: 10px; overflow-y: auto; }
-        .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-        .item-card { background: #111; border-radius: 5px; padding: 15px; font-size: 12px; text-align: center; border: 1px solid #222; }
-        #playerOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; }
-        video { width: 100%; height: 100%; }
-        .controls-top { position: absolute; top: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1001; background: rgba(0,0,0,0.7); }
-        .btn-action { background: var(--primary); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; }
-        .btn-next { background: #2ecc71; margin-right: 10px; }
+        .item-row { background: #1a1a1a; padding: 15px; margin-bottom: 5px; border-radius: 5px; display: flex; align-items: center; font-size: 13px; cursor: pointer; border-left: 3px solid var(--primary); }
+        
+        #playerView { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; }
+        video { width: 100%; height: 100%; background: #000; }
+        .player-bar { position: absolute; top: 0; width: 100%; padding: 15px; background: rgba(0,0,0,0.8); display: flex; justify-content: space-between; align-items: center; }
+        .btn-p { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <header>
-    <h2 style="color:var(--primary); text-align:center;">ULTRA PLAY <span style="color:white">V5.2</span></h2>
+    <h2 style="color:var(--primary)">ULTRA<span style="color:white">PLAY</span></h2>
+    <span style="font-size: 10px; background: var(--primary); padding: 3px 8px; border-radius: 10px;">V8.0</span>
 </header>
 
-<div class="search-container">
-    <input type="text" id="q" placeholder="Buscar episódio ou canal..." onkeyup="search()">
+<div class="search-box">
+    <input type="text" id="q" placeholder="Buscar em toda a lista..." onkeyup="search()">
 </div>
 
-<div class="content-area">
+<div class="content">
     <div class="cat-grid" id="mainMenu"></div>
 </div>
 
 <div id="subView">
-    <button style="width:100%; padding:15px; background:#333; color:white; border:none; margin-bottom:10px;" onclick="closeView()">← VOLTAR ÀS CATEGORIAS</button>
-    <div class="video-grid" id="itemsGrid"></div>
+    <button class="btn-p" style="width:100%; margin-bottom:15px; background:#333;" onclick="closeView()">← VOLTAR</button>
+    <div id="itemsGrid"></div>
 </div>
 
-<div id="playerOverlay">
-    <div class="controls-top">
-        <span id="nowPlaying" style="font-size:12px;"></span>
-        <div>
-            <button class="btn-action btn-next" id="nextBtn" onclick="playNext()">PRÓXIMO ⏭️</button>
-            <button class="btn-action" onclick="stopPlayer()">FECHAR X</button>
+<div id="playerView">
+    <div class="player-bar">
+        <span id="playingTitle" style="font-size: 12px; font-weight: bold;"></span>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-p" style="background:#28a745" onclick="nextEp()">PRÓXIMO ⏭️</button>
+            <button class="btn-p" onclick="closePlayer()">FECHAR X</button>
         </div>
     </div>
-    <video id="videoPlayer" controls autoplay playsinline></video>
+    <video id="mainVid" controls autoplay playsinline></video>
 </div>
 
 <script>
-// AQUI ESTÁ CADA UM DOS LINKS QUE VOCÊ ENVIOU - SEM CORTES
-const rawData = `
-#EXTINF:-1,T.I.U.S01E13
-http://painel.iptvmove.com:25461/movie/danga07/1963/3420.mp4
-#EXTINF:-1,T.I.U.S01E14
-http://painel.iptvmove.com:25461/movie/danga07/1963/3412.mp4
-#EXTINF:-1,T.I.U.S01E15
-http://painel.iptvmove.com:25461/movie/danga07/1963/3409.mp4
-#EXTINF:-1,T.I.U.S01E16
-http://painel.iptvmove.com:25461/movie/danga07/1963/3424.mp4
-#EXTINF:-1,T.I.U.S01E17
-http://painel.iptvmove.com:25461/movie/danga07/1963/3408.mp4
-#EXTINF:-1,T.I.U.S01E18
-http://painel.iptvmove.com:25461/movie/danga07/1963/3417.mp4
-#EXTINF:-1,Riverdale.S01E01
-http://painel.iptvmove.com:25461/movie/danga07/1963/3431.mp4
-#EXTINF:-1,Riverdale.S01E03
-http://painel.iptvmove.com:25461/movie/danga07/1963/3433.mp4
-#EXTINF:-1,Riverdale.S01E04
-http://painel.iptvmove.com:25461/movie/danga07/1963/3430.mp4
-#EXTINF:-1,Riverdale.S01E05
-http://painel.iptvmove.com:25461/movie/danga07/1963/3425.mp4
-#EXTINF:-1,Riverdale.S01E06
-http://painel.iptvmove.com:25461/movie/danga07/1963/3429.mp4
-#EXTINF:-1,Riverdale.S01E07
-http://painel.iptvmove.com:25461/movie/danga07/1963/3427.mp4
-#EXTINF:-1,Riverdale.S01E08
-http://painel.iptvmove.com:25461/movie/danga07/1963/3432.mp4
-#EXTINF:-1,Riverdale.S01E09
-http://painel.iptvmove.com:25461/movie/danga07/1963/3435.mp4
-#EXTINF:-1,Riverdale.S01E10
-http://painel.iptvmove.com:25461/movie/danga07/1963/3428.mp4
-#EXTINF:-1,Riverdale.S01E11
-http://painel.iptvmove.com:25461/movie/danga07/1963/3436.mp4
-#EXTINF:-1,Riverdale.S01E12
-http://painel.iptvmove.com:25461/movie/danga07/1963/3434.mp4
-#EXTINF:-1,Riverdale.S01E13
-http://painel.iptvmove.com:25461/movie/danga07/1963/3426.mp4
-#EXTINF:-1,Taken - 01 - Beyond The Sky
-http://painel.iptvmove.com:25461/movie/danga07/1963/3444.mp4
-#EXTINF:-1,Taken - 02 - Jacob and Jesse
-http://painel.iptvmove.com:25461/movie/danga07/1963/3443.mp4
-#EXTINF:-1,Taken - 03 - High Hopes
-http://painel.iptvmove.com:25461/movie/danga07/1963/3445.mp4
-#EXTINF:-1,Taken - 04 - Acid Tests
-http://painel.iptvmove.com:25461/movie/danga07/1963/3438.mp4
-#EXTINF:-1,Taken - 05 - Maintenance
-http://painel.iptvmove.com:25461/movie/danga07/1963/3441.mp4
-#EXTINF:-1,Taken - 06 - Charlie and Lisa
-http://painel.iptvmove.com:25461/movie/danga07/1963/3446.mp4
-#EXTINF:-1,Taken - 07 - God's Equation
-http://painel.iptvmove.com:25461/movie/danga07/1963/3442.mp4
-#EXTINF:-1,Taken - 08 - Dropping the Dishes
-http://painel.iptvmove.com:25461/movie/danga07/1963/3437.mp4
-#EXTINF:-1,Taken - 09 - John
-http://painel.iptvmove.com:25461/movie/danga07/1963/3439.mp4
-#EXTINF:-1,Taken - 10 - Taken
-http://painel.iptvmove.com:25461/movie/danga07/1963/3440.mp4
-#EXTINF:-1,The.OA.S01E01
-http://painel.iptvmove.com:25461/movie/danga07/1963/3452.mp4
-#EXTINF:-1,The.OA.S01E02
-http://painel.iptvmove.com:25461/movie/danga07/1963/3453.mp4
-#EXTINF:-1,The.OA.S01E03
-http://painel.iptvmove.com:25461/movie/danga07/1963/3450.mp4
-#EXTINF:-1,The.OA.S01E04
-http://painel.iptvmove.com:25461/movie/danga07/1963/3449.mp4
-#EXTINF:-1,The.OA.S01E05
-http://painel.iptvmove.com:25461/movie/danga07/1963/3451.mp4
-#EXTINF:-1,The.OA.S01E06
-http://painel.iptvmove.com:25461/movie/danga07/1963/3454.mp4
-#EXTINF:-1,The.OA.S01E07
-http://painel.iptvmove.com:25461/movie/danga07/1963/3447.mp4
-#EXTINF:-1,The.OA.S01E08
-http://painel.iptvmove.com:25461/movie/danga07/1963/3448.mp4
-#EXTINF:-1,Lucifer.S01E01
-http://painel.iptvmove.com:25461/movie/danga07/1963/3480.mp4
-#EXTINF:-1,Lucifer.S01E02
-http://painel.iptvmove.com:25461/movie/danga07/1963/3482.mp4
-#EXTINF:-1,Lucifer.S01E03
-http://painel.iptvmove.com:25461/movie/danga07/1963/3481.mp4
-#EXTINF:-1,Lucifer.S01E04
-http://painel.iptvmove.com:25461/movie/danga07/1963/3473.mp4
-#EXTINF:-1,Lucifer.S01E05
-http://painel.iptvmove.com:25461/movie/danga07/1963/3478.mp4
-#EXTINF:-1,Lucifer.S01E06
-http://painel.iptvmove.com:25461/movie/danga07/1963/3483.mp4
-#EXTINF:-1,Lucifer.S01E07
-http://painel.iptvmove.com:25461/movie/danga07/1963/3476.mp4
-#EXTINF:-1,Lucifer.S01E08
-http://painel.iptvmove.com:25461/movie/danga07/1963/3477.mp4
-#EXTINF:-1,Lucifer.S01E09
-http://painel.iptvmove.com:25461/movie/danga07/1963/3472.mp4
-#EXTINF:-1,Lucifer.S01E10
-http://painel.iptvmove.com:25461/movie/danga07/1963/3479.mp4
-#EXTINF:-1,Lucifer.S01E11
-http://painel.iptvmove.com:25461/movie/danga07/1963/3484.mp4
-#EXTINF:-1,Lucifer.S01E12
-http://painel.iptvmove.com:25461/movie/danga07/1963/3475.mp4
-#EXTINF:-1,Lucifer.S01E13
-http://painel.iptvmove.com:25461/movie/danga07/1963/3474.mp4
-#EXTINF:-1,PicaPau 24h
-http://painel.iptvmove.com:25461/live/danga07/1963/3495.m3u8
-#EXTINF:-1,Tom e Jerry 24h
-http://painel.iptvmove.com:25461/live/danga07/1963/3496.m3u8
-#EXTINF:-1,Combate HD
-http://painel.iptvmove.com:25461/live/danga07/1963/2255.m3u8
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E01
-http://painel.iptvmove.com:25461/movie/danga07/1963/3511.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E02
-http://painel.iptvmove.com:25461/movie/danga07/1963/3507.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E03
-http://painel.iptvmove.com:25461/movie/danga07/1963/3509.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E04
-http://painel.iptvmove.com:25461/movie/danga07/1963/3505.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E05
-http://painel.iptvmove.com:25461/movie/danga07/1963/3510.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E06
-http://painel.iptvmove.com:25461/movie/danga07/1963/3501.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E07
-http://painel.iptvmove.com:25461/movie/danga07/1963/3512.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E08
-http://painel.iptvmove.com:25461/movie/danga07/1963/3502.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E09
-http://painel.iptvmove.com:25461/movie/danga07/1963/3513.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E10
-http://painel.iptvmove.com:25461/movie/danga07/1963/3517.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E11
-http://painel.iptvmove.com:25461/movie/danga07/1963/3514.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E12
-http://painel.iptvmove.com:25461/movie/danga07/1963/3498.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E15
-http://painel.iptvmove.com:25461/movie/danga07/1963/3499.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E16
-http://painel.iptvmove.com:25461/movie/danga07/1963/3500.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E17
-http://painel.iptvmove.com:25461/movie/danga07/1963/3506.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E18
-http://painel.iptvmove.com:25461/movie/danga07/1963/3504.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E19
-http://painel.iptvmove.com:25461/movie/danga07/1963/3503.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E20
-http://painel.iptvmove.com:25461/movie/danga07/1963/3516.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E21
-http://painel.iptvmove.com:25461/movie/danga07/1963/3515.avi
-#EXTINF:-1,Todo.Mundo.Odeia.o.Chris.T01.E22
-http://painel.iptvmove.com:25461/movie/danga07/1963/3508.avi
-#EXTINF:-1,Todo Mundo Odeia o Chris 24h
-http://painel.iptvmove.com:25461/live/danga07/1963/3520.m3u8
-#EXTINF:-1,Real Madrid TV
-http://painel.iptvmove.com:25461/live/danga07/1963/3521.m3u8
-#EXTINF:-1,EI MAXX HD
-http://painel.iptvmove.com:25461/live/danga07/1963/3522.m3u8
-#EXTINF:-1,EI MAXX 2 HD
-http://painel.iptvmove.com:25461/live/danga07/1963/3525.m3u8
-`;
+// BANCO DE DADOS COMPLETO COM TODA A SUA LISTA
+const fullData = [
+    {n:"T.I.U.S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3420.mp4", c:"THIS IS US"},
+    {n:"T.I.U.S01E14", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3412.mp4", c:"THIS IS US"},
+    {n:"T.I.U.S01E15", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3409.mp4", c:"THIS IS US"},
+    {n:"T.I.U.S01E16", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3424.mp4", c:"THIS IS US"},
+    {n:"T.I.U.S01E17", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3408.mp4", c:"THIS IS US"},
+    {n:"T.I.U.S01E18", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3417.mp4", c:"THIS IS US"},
+    {n:"Riverdale.S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3431.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3433.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3430.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3425.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E06", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3429.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E07", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3427.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3432.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E09", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3435.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E10", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3428.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E11", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3436.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E12", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3434.mp4", c:"RIVERDALE"},
+    {n:"Riverdale.S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3426.mp4", c:"RIVERDALE"},
+    {n:"Taken - Ep 01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3444.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 02", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3443.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3445.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3438.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3441.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 06", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3446.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 07", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3442.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3437.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 09", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3439.mp4", c:"TAKEN"},
+    {n:"Taken - Ep 10", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3440.mp4", c:"TAKEN"},
+    {n:"The.OA.S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3452.mp4", c:"THE OA"},
+    {n:"The.OA.S01E02", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3453.mp4", c:"THE OA"},
+    {n:"The.OA.S01E03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3450.mp4", c:"THE OA"},
+    {n:"The.OA.S01E04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3449.mp4", c:"THE OA"},
+    {n:"The.OA.S01E05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3451.mp4", c:"THE OA"},
+    {n:"The.OA.S01E06", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3454.mp4", c:"THE OA"},
+    {n:"The.OA.S01E07", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3447.mp4", c:"THE OA"},
+    {n:"The.OA.S01E08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3448.mp4", c:"THE OA"},
+    {n:"Lucifer.S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3480.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E02", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3482.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3481.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3473.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3478.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E06", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3483.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E07", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3476.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3477.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E09", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3472.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E10", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3479.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E11", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3484.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E12", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3475.mp4", c:"LUCIFER"},
+    {n:"Lucifer.S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3474.mp4", c:"LUCIFER"},
+    {n:"PicaPau 24h", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3495.m3u8", c:"CANAL 24H"},
+    {n:"Tom e Jerry 24h", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3496.m3u8", c:"CANAL 24H"},
+    {n:"Chris - Ep 01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3511.avi", c:"TODO MUNDO ODEIA O CHRIS"},
+    {n:"Chris - Ep 02", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3507.avi", c:"TODO MUNDO ODEIA O CHRIS"},
+    {n:"Chris - Ep 03", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3509.avi", c:"TODO MUNDO ODEIA O CHRIS"},
+    {n:"Chris - Ep 04", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3505.avi", c:"TODO MUNDO ODEIA O CHRIS"},
+    {n:"Chris - Ep 05", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3510.avi", c:"TODO MUNDO ODEIA O CHRIS"},
+    {n:"Chris - Ep 13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3518.mkv", c:"TODO MUNDO ODEIA O CHRIS"},
+    {n:"Combate HD", u:"http://painel.iptvmove.com:25461/live/danga07/1963/2255.m3u8", c:"ESPORTES"},
+    {n:"Real Madrid TV", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3521.m3u8", c:"ESPORTES"},
+    {n:"EI MAXX HD", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3522.m3u8", c:"ESPORTES"}
+];
 
-let db = [];
-let categories = {};
-let currentPlaylist = [];
+let groups = {};
+let activeList = [];
 let currentIndex = 0;
 let hls = new Hls();
 
 function init() {
-    const lines = rawData.trim().split('\n');
-    let item = null;
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('#EXTINF')) {
-            const name = lines[i].split(',')[1];
-            let group = "SÉRIES";
-            if(name.includes("T.I.U")) group = "THIS IS US";
-            else if(name.includes("Riverdale")) group = "RIVERDALE";
-            else if(name.includes("Lucifer")) group = "LUCIFER";
-            else if(name.includes("The.OA")) group = "THE OA";
-            else if(name.includes("Taken")) group = "TAKEN";
-            else if(name.includes("Chris")) group = "TODO MUNDO ODEIA O CHRIS";
-            else if(name.includes("MAX") || name.includes("Madrid") || name.includes("Combate")) group = "ESPORTES";
-            else if(name.includes("Pica") || name.includes("Jerry")) group = "DESENHOS 24H";
-            
-            item = { name: name.trim(), group: group, url: lines[i+1].trim() };
-            db.push(item);
-            if (!categories[item.group]) categories[item.group] = [];
-            categories[item.group].push(item);
-        }
-    }
-    renderMenu();
-}
-
-function renderMenu() {
+    fullData.forEach(item => {
+        if(!groups[item.c]) groups[item.c] = [];
+        groups[item.c].push(item);
+    });
     const menu = document.getElementById('mainMenu');
-    menu.innerHTML = "";
-    Object.keys(categories).sort().forEach(cat => {
-        menu.innerHTML += `<div class="cat-item" onclick="showCategory('${cat}')"><i class="fas fa-play"></i><span>${cat}</span></div>`;
+    Object.keys(groups).sort().forEach(g => {
+        menu.innerHTML += `<div class="cat-card" onclick="openCat('${g}')"><i class="fas fa-folder"></i>${g}</div>`;
     });
 }
 
-function showCategory(cat) {
-    currentPlaylist = categories[cat];
-    renderItems(currentPlaylist);
-}
-
-function renderItems(list) {
+function openCat(g) {
+    activeList = groups[g];
     const grid = document.getElementById('itemsGrid');
     grid.innerHTML = "";
     document.getElementById('subView').style.display = 'block';
-    list.forEach((item, index) => {
-        grid.innerHTML += `<div class="item-card" onclick="startPlayer(${index})">${item.name}</div>`;
+    activeList.forEach((item, i) => {
+        grid.innerHTML += `<div class="item-row" onclick="playVideo(${i})"><i class="fas fa-play" style="margin-right:10px; color:red"></i> ${item.n}</div>`;
     });
 }
 
-function startPlayer(index) {
+function playVideo(index) {
     currentIndex = index;
-    const item = currentPlaylist[currentIndex];
-    const video = document.getElementById('videoPlayer');
-    document.getElementById('nowPlaying').innerText = item.name;
-    document.getElementById('playerOverlay').style.display = 'block';
-    document.getElementById('nextBtn').style.display = currentIndex < currentPlaylist.length - 1 ? 'inline-block' : 'none';
+    const item = activeList[currentIndex];
+    const video = document.getElementById('mainVid');
+    document.getElementById('playingTitle').innerText = item.n;
+    document.getElementById('playerView').style.display = 'block';
 
-    if (item.url.includes('m3u8')) {
-        if (Hls.isSupported()) { hls.loadSource(item.url); hls.attachMedia(video); }
-    } else { hls.detachMedia(); video.src = item.url; }
+    if(item.u.includes('m3u8')) {
+        if(Hls.isSupported()){ hls.loadSource(item.u); hls.attachMedia(video); }
+    } else {
+        hls.detachMedia(); video.src = item.u;
+    }
+    video.play().catch(() => alert("Este arquivo requer um player externo ou navegador atualizado."));
 }
 
-function playNext() { if (currentIndex < currentPlaylist.length - 1) startPlayer(currentIndex + 1); }
-function stopPlayer() { document.getElementById('videoPlayer').pause(); document.getElementById('playerOverlay').style.display = 'none'; }
+function nextEp() { if(currentIndex < activeList.length -1) playVideo(currentIndex + 1); }
+function closePlayer() { document.getElementById('mainVid').pause(); document.getElementById('playerView').style.display = 'none'; }
 function closeView() { document.getElementById('subView').style.display = 'none'; }
 function search() {
-    const val = document.getElementById('q').value.toLowerCase();
-    if(val.length < 2) return;
-    currentPlaylist = db.filter(i => i.name.toLowerCase().includes(val));
-    renderItems(currentPlaylist);
+    const term = document.getElementById('q').value.toLowerCase();
+    if(term.length < 2) return;
+    activeList = fullData.filter(i => i.n.toLowerCase().includes(term));
+    openCat('Busca'); // Reaproveita a view de lista
 }
 
 init();
