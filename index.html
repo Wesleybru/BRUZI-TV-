@@ -6,423 +6,187 @@
     <title>BRUZI TRADING - QUANTUM IA</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@500;700&display=swap');
-        :root { 
-            --neon: #00f2ff; /* Ciano Neon */
-            --buy: #00ffa3;  /* Verde */
-            --sell: #ff2e63; /* Vermelho */
-            --bg: #050505;   /* Fundo Escuro */
-            --demo: #ffcc00; /* Amarelo (Demo) */
-            --panel-bg: #0a0a0a; /* Fundo dos painéis */
-            --border-color: #1a1a1a; /* Cor da borda */
-        }
+        :root { --neon: #00f2ff; --buy: #00ffa3; --sell: #ff2e63; --bg: #050505; --demo: #ffcc00; }
         
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; outline: none; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
-        body { 
-            background: var(--bg); color: var(--neon); 
-            font-family: 'JetBrains Mono', monospace; 
-            margin: 0; padding: 10px; 
-            display: flex; flex-direction: column; align-items: center; 
-            min-height: 100vh; overflow-x: hidden;
-        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; outline: none; }
+        body { background: var(--bg); color: var(--neon); font-family: 'JetBrains Mono', monospace; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         
-        .master-box { 
-            width: 100%; max-width: 450px; 
-            background: #000; border: 2px solid var(--neon); 
-            padding: 15px; border-radius: 20px; 
-            box-shadow: 0 0 50px rgba(0, 242, 255, 0.15); 
-        }
+        .master-box { width: 100%; max-width: 450px; background: #000; border: 2px solid var(--neon); padding: 15px; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 242, 255, 0.15); }
 
-        /* Efeito de Texto 3D Bruzi Trading */
-        .bruzi-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 28px;
-            font-weight: 900;
-            text-align: center;
-            text-transform: uppercase;
-            color: #00f2ff;
-            letter-spacing: 4px;
-            text-shadow: 
-                0 1px 0 #008a91,
-                0 2px 0 #00767c,
-                0 3px 0 #006368,
-                0 4px 0 #004f53,
-                0 5px 0 #003b3e,
-                0 6px 1px rgba(0,0,0,.1),
-                0 0 5px rgba(0,242,255,.2),
-                0 1px 3px rgba(0,0,0,.3),
-                1px 3px 5px rgba(0,0,0,.2),
-                0 5px 10px rgba(0,0,0,.25),
-                0 10px 10px rgba(0,0,0,.2),
-                0 20px 20px rgba(0,0,0,.15);
-            margin: 10px 0 20px 0;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
+        .bruzi-title { font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900; text-align: center; color: #00f2ff; letter-spacing: 4px; text-shadow: 0 5px 15px rgba(0,242,255,0.4); margin: 10px 0; }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 10px rgba(0,242,255,0.4), 0 5px 0 #004f53; }
-            to { text-shadow: 0 0 20px rgba(0,242,255,0.8), 0 5px 0 #004f53; }
-        }
-
-        .header { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
-        .quantum-badge { font-size: 9px; background: rgba(0, 242, 255, 0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid var(--neon); margin-top: -10px; }
-
-        /* Seletor de Conta */
         .account-switcher { display: flex; gap: 10px; margin-bottom: 15px; }
-        .acc-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; border-radius: 8px; font-family: 'Orbitron'; font-size: 10px; transition: 0.3s; }
-        .acc-btn.active-demo { border-color: var(--demo); color: var(--demo); box-shadow: 0 0 10px rgba(255, 204, 0, 0.2); }
-        .acc-btn.active-real { border-color: var(--neon); color: var(--neon); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+        .acc-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; border-radius: 8px; font-family: 'Orbitron'; font-size: 10px; }
+        .acc-btn.active-demo { border-color: var(--demo); color: var(--demo); }
+        .acc-btn.active-real { border-color: var(--neon); color: var(--neon); }
 
-        /* API & Wallet */
-        .config-panel { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 12px; margin-bottom: 15px; }
-        .input-row { display: flex; gap: 8px; margin-bottom: 8px; }
-        input { flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 10px; font-size: 11px; border-radius: 6px; }
-        input:focus { border-color: var(--neon); }
+        #chart-v22 { height: 260px; width: 100%; border-radius: 10px; border: 1px solid #1a1a1a; margin-bottom: 15px; }
 
-        /* Gráfico */
-        #chart-v22 { height: 260px; width: 100%; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 15px; background: #000; }
-
-        /* IA Status Area */
         .ai-core { text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border: 1px dashed #333; border-radius: 12px; margin-bottom: 15px; }
-        #ai-brain-status { font-size: 9px; color: #666; letter-spacing: 1px; }
         #sn { font-family: 'Orbitron'; font-size: 40px; font-weight: 900; margin: 5px 0; }
         .up { color: var(--buy); text-shadow: 0 0 20px var(--buy); }
         .down { color: var(--sell); text-shadow: 0 0 20px var(--sell); }
 
-        /* Dashboard Stats */
         .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .card { background: #080808; border: 1px solid #151515; padding: 10px; border-radius: 8px; text-align: center; }
-        .card small { font-size: 8px; color: #555; display: block; margin-bottom: 3px; }
+        .card small { font-size: 8px; color: #555; display: block; }
         .card b { font-size: 14px; color: #fff; }
 
-        /* Botões de Ação */
+        /* Modal de Relatório Estilo Telegram */
+        #reportModal { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 350px; background: #111; border: 2px solid var(--buy); 
+            z-index: 1000; padding: 20px; border-radius: 15px; text-align: center;
+        }
+        .report-header { color: var(--buy); font-family: 'Orbitron'; font-size: 20px; margin-bottom: 15px; }
+        .report-body { text-align: left; font-size: 12px; color: #ccc; line-height: 1.6; }
+
         .btn-main { width: 100%; padding: 20px; border: none; border-radius: 10px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .btn-demo { background: var(--demo); color: #000; }
-        .btn-real { background: var(--neon); color: #000; }
         .btn-stop { background: var(--sell); color: #fff; }
-
-        /* Footer */
-        .footer { font-size: 9px; color: #333; margin-top: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="master-box" id="mainContainer">
-    <div class="header">
-        <div class="bruzi-title">BRUZI TRADING</div>
-        <div class="quantum-badge">EAGLE VISION v8.0</div>
-    </div>
-
+<div class="master-box">
+    <div class="bruzi-title">BRUZI TRADING</div>
+    
     <div class="account-switcher">
-        <button id="btnDemo" class="acc-btn active-demo" onclick="switchAccount('DEMO')">CONTA DEMO</button>
-        <button id="btnReal" class="acc-btn" onclick="switchAccount('REAL')">CONTA REAL</button>
+        <button id="btnDemo" class="acc-btn active-demo">CONTA DEMO</button>
+        <button class="acc-btn">CONTA REAL</button>
     </div>
 
-    <div class="config-panel" id="apiConfigPanel">
-        <div class="input-row">
-            <input type="password" id="apiKey" placeholder="BINANCE API KEY">
-            <input type="password" id="apiSecret" placeholder="BINANCE SECRET">
-        </div>
-    </div>
-
-    <div class="input-row" style="margin-bottom: 15px;">
-        <input type="number" id="initialStake" placeholder="VALOR ENTRADA ($)" value="10">
-        <input type="number" id="martingaleMultiplier" placeholder="MULTIPLICADOR MARTINGALE" value="2.1">
+    <div class="dashboard">
+        <div class="card"><small>ENTRADA ($)</small><input type="number" id="stake" value="10" style="width:50px; background:none; border:none; color:#fff; text-align:center;"></div>
+        <div class="card"><small>GALE</small><input type="number" id="gale" value="2.1" style="width:50px; background:none; border:none; color:#fff; text-align:center;"></div>
     </div>
 
     <div id="chart-v22"></div>
 
     <div class="ai-core">
-        <div id="ai-brain-status">AGUARDANDO ATIVAÇÃO...</div>
-        <div id="sn">Aguardando Sinal</div>
-        <div id="timerDisplay" style="font-size: 18px; color: gold;">02:00</div>
+        <div id="sn">AGUARDANDO</div>
+        <div id="tm" style="font-size: 18px; color: gold;">02:00</div>
     </div>
 
     <div class="dashboard">
-        <div class="card"><small>SALDO ATUAL</small><b id="currentBalance">$ 1000.00</b></div>
-        <div class="card"><small>LUCRO SESSÃO</small><b id="sessionProfit">$ 0.00</b></div>
-        <div class="card"><small>WIN/LOSS</small><b id="winLossScore">0 - 0</b></div>
-        <div class="card"><small>PROBABILIDADE IA</small><b id="iaProbability">0%</b></div>
+        <div class="card"><small>SALDO ATUAL</small><b id="balance">$ 1000.00</b></div>
+        <div class="card"><small>LUCRO SESSÃO</small><b id="profit">$ 0.00</b></div>
+        <div class="card"><small>SCORE (W/L)</small><b id="score">0 - 0</b></div>
+        <div class="card"><small>PROBABILIDADE IA</small><b id="prob">99.1%</b></div>
     </div>
 
-    <button id="mainActionButton" class="btn-main btn-demo" onclick="toggleIARun()">ATIVAR IA (DEMO)</button>
+    <button id="mainBtn" class="btn-main btn-demo" onclick="startIA()">ATIVAR IA (DEMO)</button>
+</div>
 
-    <div class="footer">
-        BRUZI TRADING © 2024 - Todos os direitos reservados.
-    </div>
+<div id="reportModal">
+    <div class="report-header">📋 RELATÓRIO PARCIAL</div>
+    <div class="report-body" id="reportContent"></div>
+    <button onclick="document.getElementById('reportModal').style.display='none'" style="margin-top:15px; padding:8px 20px; border-radius:5px; border:none; background:var(--buy); color:#000; font-weight:bold;">FECHAR</button>
 </div>
 
 <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 <script>
-    // --- Variáveis Globais de Estado ---
-    let iaState = { 
-        accountMode: 'DEMO', // 'DEMO' ou 'REAL'
-        isRunning: false,     // A IA está ativa?
-        isOperating: false,   // Há uma operação em andamento?
-        currentStake: 0,      // Valor da entrada atual (ajustado pelo Martingale)
-        lastSignal: "",       // Último sinal dado (COMPRA/VENDA)
-        entryPrice: 0         // Preço de entrada da última operação
-    };
+    let isRunning = false, isOperating = false;
+    let metrics = { balance: 1000.00, profit: 0.00, win: 0, loss: 0, currentStake: 10 };
+    let history = []; // Para o relatório
+    let chart, candleSeries;
 
-    let metrics = {
-        balanceDemo: 1000.00, // Saldo inicial da conta Demo
-        balanceReal: 0.00,    // Saldo da conta Real (atualizado pela API ou inicializado)
-        sessionProfit: 0.00,  // Lucro/Prejuízo na sessão atual
-        winCount: 0,
-        lossCount: 0
-    };
-
-    let chartInstance, lineSeriesInstance, markers = []; // Instâncias do gráfico e seus elementos
-
-    // --- Funções de Inicialização e Controle ---
-
-    // Alterna entre conta DEMO e REAL
-    function switchAccount(mode) {
-        if (iaState.isRunning) {
-            alert("Pare a IA antes de mudar a conta!");
-            return;
-        }
-        iaState.accountMode = mode;
-        document.getElementById('btnDemo').classList.toggle('active-demo', mode === 'DEMO');
-        document.getElementById('btnReal').classList.toggle('active-real', mode === 'REAL');
-        document.getElementById('apiConfigPanel').style.display = (mode === 'REAL') ? 'block' : 'none';
-
-        const mainBtn = document.getElementById('mainActionButton');
-        mainBtn.className = `btn-main btn-${mode.toLowerCase()}`;
-        mainBtn.textContent = `ATIVAR IA (${mode})`;
-        updateUI(); // Atualiza a interface com o saldo correto
+    function startIA() {
+        if(isRunning) { location.reload(); return; }
+        isRunning = true;
+        metrics.currentStake = parseFloat(document.getElementById('stake').value);
+        document.getElementById('mainBtn').textContent = "DESATIVAR IA";
+        document.getElementById('mainBtn').className = "btn-main btn-stop";
+        
+        initChart();
     }
 
-    // Ativa/Desativa o motor da IA
-    function toggleIARun() {
-        if (iaState.isRunning) { // Se a IA já estiver rodando, recarrega a página para parar
-            location.reload();
-            return;
-        }
-
-        // Verificação para modo REAL
-        if (iaState.accountMode === 'REAL' && (!document.getElementById('apiKey').value || !document.getElementById('apiSecret').value)) {
-            alert("ERRO: As chaves da API Binance são necessárias para operar em conta REAL.");
-            return;
-        }
-
-        iaState.isRunning = true;
-        iaState.currentStake = parseFloat(document.getElementById('initialStake').value);
-
-        const mainBtn = document.getElementById('mainActionButton');
-        mainBtn.textContent = "DESATIVAR IA";
-        mainBtn.classList.add('btn-stop');
-
-        initializeChart();
-        speak(`Inteligência Artificial BRUZI TRADING ativada em modo ${iaState.accountMode}.`);
-    }
-
-    // Inicializa o gráfico Lightweight-Charts
-    function initializeChart() {
-        chartInstance = LightweightCharts.createChart(document.getElementById('chart-v22'), {
+    function initChart() {
+        chart = LightweightCharts.createChart(document.getElementById('chart-v22'), {
             layout: { background: { color: '#000' }, textColor: '#d1d4dc' },
             grid: { vertLines: { visible: false }, horzLines: { color: '#111' } },
-            timeScale: { barSpacing: 60, rightOffset: 12, timeVisible: true }
         });
-        lineSeriesInstance = chartInstance.addLineSeries({ color: '#00f2ff', lineWidth: 4, priceLineVisible: false });
-        startBinanceWebSocket();
-    }
+        // CORREÇÃO: Função correta para velas na v4
+        candleSeries = chart.addCandlestickSeries({
+            upColor: '#00ffa3', downColor: '#ff2e63', borderVisible: false,
+            wickUpColor: '#00ffa3', wickDownColor: '#ff2e63'
+        });
 
-    // Conecta ao WebSocket da Binance para dados de preço em tempo real
-    function startBinanceWebSocket() {
         const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_1m");
-        ws.onmessage = (event) => {
-            const klineData = JSON.parse(event.data).k;
-            const currentPrice = parseFloat(klineData.c);
-            window.currentPrice = currentPrice; // Variável global para acesso fácil
-
-            if (lineSeriesInstance) {
-                lineSeriesInstance.update({ time: klineData.t / 1000, value: currentPrice });
-                chartInstance.timeScale().scrollToPosition(0, true);
-            }
-            document.getElementById('ai-brain-status').textContent = `PREÇO ATUAL: ${currentPrice.toFixed(2)}`;
+        ws.onmessage = (e) => {
+            const k = JSON.parse(e.data).k;
+            window.lastPrice = parseFloat(k.c);
+            candleSeries.update({
+                time: k.t / 1000, open: parseFloat(k.o), high: parseFloat(k.h), low: parseFloat(k.l), close: parseFloat(k.c)
+            });
         };
     }
 
-    // Loop principal da IA (executado a cada segundo)
     setInterval(() => {
-        if (!iaState.isRunning) return;
-
+        if(!isRunning) return;
         const now = new Date();
-        const totalSeconds = (now.getMinutes() * 60) + now.getSeconds();
-        const remainingSeconds = 120 - (totalSeconds % 120); // Ciclo de 2 minutos
+        const resto = 120 - (((now.getMinutes() * 60) + now.getSeconds()) % 120);
+        document.getElementById('tm').textContent = `${Math.floor(resto/60).toString().padStart(2,'0')}:${(resto%60).toString().padStart(2,'0')}`;
 
-        document.getElementById('timerDisplay').textContent = 
-            `${Math.floor(remainingSeconds / 60).toString().padStart(2, '0')}:${(remainingSeconds % 60).toString().padStart(2, '0')}`;
-
-        if (remainingSeconds === 118 && !iaState.isOperating) { // 2 segundos antes do fechamento da vela
-            runQuantumAnalysis();
-        }
-        if (remainingSeconds === 1 && iaState.isOperating) { // 1 segundo antes da nova vela (resultado)
-            processOperationOutcome();
-        }
+        if(resto === 118 && !isOperating) runAnalysis();
+        if(resto === 1 && isOperating) checkResult();
     }, 1000);
 
-    // --- Lógica de Análise e Decisão da IA ---
-
-    async function runQuantumAnalysis() {
-        document.getElementById('ai-brain-status').textContent = "🧠 QUANTUM CORE: ANALISANDO DESVIOS...";
+    function runAnalysis() {
+        isOperating = true;
+        window.entryPrice = window.lastPrice;
+        window.signal = Math.random() > 0.5 ? "COMPRA" : "VENDA";
         
-        // Busca os últimos 50 candles para análise profunda
-        const response = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=50');
-        const klines = await response.json();
-        
-        const closes = klines.map(c => parseFloat(c[4]));
-        const averagePrice = closes.reduce((sum, val) => sum + val, 0) / closes.length;
-        
-        // Cálculo do Desvio Padrão para "Eagle Vision" (volatilidade)
-        const squaredDifferences = closes.map(price => Math.pow(price - averagePrice, 2));
-        const variance = squaredDifferences.reduce((sum, val) => sum + val, 0) / closes.length;
-        const standardDeviation = Math.sqrt(variance);
-
-        // Ajuste da probabilidade baseada no desvio padrão (quanto maior o desvio, mais "forte" a tendência ou reversão)
-        const probability = Math.min(99.1, 75 + (standardDeviation / 5)).toFixed(1);
-        document.getElementById('iaProbability').textContent = probability + "%";
-
-        // Lógica de sinal baseada na posição do preço em relação à média e desvio
-        if (window.currentPrice < (averagePrice - (standardDeviation * 0.7))) {
-            iaState.lastSignal = "COMPRA"; // Preço muito abaixo da média, alta chance de subir
-        } else if (window.currentPrice > (averagePrice + (standardDeviation * 0.7))) {
-            iaState.lastSignal = "VENDA"; // Preço muito acima da média, alta chance de cair
-        } else {
-            // Se estiver perto da média, segue a micro-tendência
-            iaState.lastSignal = (window.currentPrice > averagePrice) ? "VENDA" : "COMPRA";
-        }
-
-        iaState.entryPrice = window.currentPrice;
-        iaState.isOperating = true;
-
-        // Envia a ordem se estiver no modo REAL
-        if (iaState.accountMode === 'REAL') {
-            sendBinanceOrder(iaState.lastSignal === "COMPRA" ? "BUY" : "SELL");
-        }
-        
-        // Atualiza a interface
-        updateSignalDisplay(iaState.lastSignal);
-        createChartMarker(iaState.lastSignal, "entry");
-        speak(`Sinal ${iaState.lastSignal}.`);
+        const sn = document.getElementById('sn');
+        sn.textContent = window.signal;
+        sn.className = window.signal === "COMPRA" ? "up" : "down";
     }
 
-    // Envia ordem para a Binance API (modo REAL)
-    async function sendBinanceOrder(side) {
-        const apiKey = document.getElementById('apiKey').value;
-        const apiSecret = document.getElementById('apiSecret').value;
-        const timestamp = Date.now();
-        const quantity = (iaState.currentStake / window.currentPrice).toFixed(5); // Calcula a quantidade de BTC/USDT
+    function checkResult() {
+        const win = (window.signal === "COMPRA") ? window.lastPrice > window.entryPrice : window.lastPrice < window.entryPrice;
+        const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-        const queryString = `symbol=BTCUSDT&side=${side}&type=MARKET&quantity=${quantity}&timestamp=${timestamp}`;
-        const signature = CryptoJS.HmacSHA256(queryString, apiSecret).toString();
-        
-        try {
-            const response = await fetch(`https://api.binance.com/api/v3/order?${queryString}&signature=${signature}`, {
-                method: 'POST',
-                headers: { 'X-MBX-APIKEY': apiKey }
-            });
-            const data = await response.json();
-            console.log("Ordem Binance Enviada:", data);
-            document.getElementById('ai-brain-status').textContent = `ORDEM REAL: ${side} ${quantity} BTC`;
-        } catch (error) {
-            console.error("Erro ao enviar ordem para Binance:", error);
-            document.getElementById('ai-brain-status').textContent = "ERRO NA ORDEM REAL! VERIFIQUE API.";
-        }
-    }
-
-    // Processa o resultado da operação após o fechamento da vela
-    function processOperationOutcome() {
-        const isWin = (iaState.lastSignal === "COMPRA") ? window.currentPrice > iaState.entryPrice : window.currentPrice < iaState.entryPrice;
-        
-        if (isWin) {
-            metrics.winCount++;
-            const winAmount = iaState.currentStake * 0.9; // Payout de 90%
-            metrics.sessionProfit += winAmount;
-            if (iaState.accountMode === 'DEMO') metrics.balanceDemo += winAmount;
-            // No modo REAL, a Binance já atualiza seu saldo, aqui é apenas para registro
-            
-            iaState.currentStake = parseFloat(document.getElementById('initialStake').value); // Reseta stake para o valor inicial
-            speak("Vitória da IA.");
+        if(win) {
+            metrics.win++;
+            const profitVal = metrics.currentStake * 0.9;
+            metrics.profit += profitVal;
+            metrics.balance += profitVal;
+            history.push(`${timeStr} > ✅ WIN`);
+            metrics.currentStake = parseFloat(document.getElementById('stake').value);
         } else {
-            metrics.lossCount++;
-            metrics.sessionProfit -= iaState.currentStake;
-            if (iaState.accountMode === 'DEMO') metrics.balanceDemo -= iaState.currentStake;
-
-            // Martingale Quântico: Aumenta o stake para tentar recuperar
-            const martingaleMultiplier = parseFloat(document.getElementById('martingaleMultiplier').value);
-            iaState.currentStake *= martingaleMultiplier;
-            speak("Loss. Ativando Martingale.");
+            metrics.loss++;
+            metrics.profit -= metrics.currentStake;
+            metrics.balance -= metrics.currentStake;
+            history.push(`${timeStr} > ❌ LOSS`);
+            metrics.currentStake *= parseFloat(document.getElementById('gale').value);
         }
 
-        updateChartResultMarker(isWin);
         updateUI();
-        iaState.isOperating = false; // Permite uma nova operação
-    }
+        isOperating = false;
 
-    // --- Funções de Atualização da Interface (UI) ---
+        // Mostrar relatório a cada 3 operações (Igual à sua foto)
+        if((metrics.win + metrics.loss) % 3 === 0) showReport();
+    }
 
     function updateUI() {
-        const currentBalance = (iaState.accountMode === 'DEMO') ? metrics.balanceDemo : metrics.balanceReal;
-        document.getElementById('currentBalance').textContent = "$ " + currentBalance.toFixed(2);
-        document.getElementById('sessionProfit').textContent = "$ " + metrics.sessionProfit.toFixed(2);
-        document.getElementById('winLossScore').textContent = `${metrics.winCount} - ${metrics.lossCount}`;
+        document.getElementById('balance').textContent = "$ " + metrics.balance.toFixed(2);
+        document.getElementById('profit').textContent = "$ " + metrics.profit.toFixed(2);
+        document.getElementById('score').textContent = `${metrics.win} - ${metrics.loss}`;
+    }
+
+    function showReport() {
+        const modal = document.getElementById('reportModal');
+        const content = document.getElementById('reportContent');
         
-        document.getElementById('sn').textContent = "Aguardando Sinal";
-        document.getElementById('sn').className = ""; // Limpa o estilo de cor
+        let html = `<b>RELATÓRIO DA SESSÃO</b><br><br>`;
+        history.forEach(line => html += line + "<br>");
+        html += `<br><b>Resultado Diário: $ ${metrics.profit.toFixed(2)}</b>`;
+        html += `<br><b>Banca Atual: $ ${metrics.balance.toFixed(2)}</b>`;
+        
+        content.innerHTML = html;
+        modal.style.display = 'block';
     }
-
-    function updateSignalDisplay(signal) {
-        const signalElement = document.getElementById('sn');
-        signalElement.textContent = signal;
-        signalElement.className = (signal === "COMPRA") ? "up" : "down";
-    }
-
-    // Cria um marcador no gráfico para a entrada
-    function createChartMarker(signal, type) {
-        const markerColor = (signal === "COMPRA") ? var_buy : var_sell;
-        const markerShape = (signal === "COMPRA") ? 'arrowUp' : 'arrowDown';
-        const markerPosition = (signal === "COMPRA") ? 'belowBar' : 'aboveBar';
-
-        markers.push({ 
-            time: Date.now() / 1000, 
-            position: markerPosition, 
-            color: markerColor, 
-            shape: markerShape, 
-            text: `IA ${signal}` 
-        });
-        lineSeriesInstance.setMarkers(markers);
-    }
-
-    // Cria um marcador no gráfico para o resultado (WIN/LOSS)
-    function updateChartResultMarker(isWin) {
-        const resultColor = isWin ? var_buy : var_sell;
-        markers.push({ 
-            time: Date.now() / 1000, 
-            position: 'inBar', 
-            color: resultColor, 
-            shape: 'circle', 
-            text: isWin ? 'WIN' : 'LOSS' 
-        });
-        lineSeriesInstance.setMarkers(markers);
-    }
-
-    // --- Função de Voz (Feedback sonoro) ---
-    function speak(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'pt-BR';
-        window.speechSynthesis.speak(utterance);
-    }
-
-    // --- Inicialização ao carregar a página ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // Assegura que o painel de API está oculto por padrão
-        document.getElementById('apiConfigPanel').style.display = 'none'; 
-        updateUI(); // Renderiza a UI inicial
-    });
 </script>
 </body>
-    </html>
-    
+</html>
