@@ -3,190 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BRUZI TRADING - QUANTUM IA</title>
+    <title>BRUZI TRADING v12.0</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@500;700&display=swap');
-        :root { --neon: #00f2ff; --buy: #00ffa3; --sell: #ff2e63; --bg: #050505; --demo: #ffcc00; }
         
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; outline: none; }
-        body { background: var(--bg); color: var(--neon); font-family: 'JetBrains Mono', monospace; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        
-        .master-box { width: 100%; max-width: 450px; background: #000; border: 2px solid var(--neon); padding: 15px; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 242, 255, 0.15); }
+        :root { --neon: #00f2ff; --buy: #00ffa3; --sell: #ff2e63; --bg: #050505; --card: #0a0a0a; }
 
-        .bruzi-title { font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900; text-align: center; color: #00f2ff; letter-spacing: 4px; text-shadow: 0 5px 15px rgba(0,242,255,0.4); margin: 10px 0; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
 
-        .account-switcher { display: flex; gap: 10px; margin-bottom: 15px; }
-        .acc-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; border-radius: 8px; font-family: 'Orbitron'; font-size: 10px; }
-        .acc-btn.active-demo { border-color: var(--demo); color: var(--demo); }
-        .acc-btn.active-real { border-color: var(--neon); color: var(--neon); }
+        .app-container { width: 100%; max-width: 400px; border: 2px solid var(--neon); border-radius: 20px; padding: 12px; background: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
 
-        #chart-v22 { height: 260px; width: 100%; border-radius: 10px; border: 1px solid #1a1a1a; margin-bottom: 15px; }
-
-        .ai-core { text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border: 1px dashed #333; border-radius: 12px; margin-bottom: 15px; }
-        #sn { font-family: 'Orbitron'; font-size: 40px; font-weight: 900; margin: 5px 0; }
-        .up { color: var(--buy); text-shadow: 0 0 20px var(--buy); }
-        .down { color: var(--sell); text-shadow: 0 0 20px var(--sell); }
-
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .card { background: #080808; border: 1px solid #151515; padding: 10px; border-radius: 8px; text-align: center; }
-        .card small { font-size: 8px; color: #555; display: block; }
-        .card b { font-size: 14px; color: #fff; }
-
-        /* Modal de Relatório Estilo Telegram */
-        #reportModal { 
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 350px; background: #111; border: 2px solid var(--buy); 
-            z-index: 1000; padding: 20px; border-radius: 15px; text-align: center;
+        /* Título 3D Bruzi Trading */
+        .bruzi-header { 
+            text-align: center; font-family: 'Orbitron'; font-size: 24px; font-weight: 900;
+            color: var(--neon); text-shadow: 0 5px 0 #004f53, 0 10px 10px rgba(0,0,0,0.5);
+            margin: 10px 0; cursor: pointer; text-transform: uppercase;
         }
-        .report-header { color: var(--buy); font-family: 'Orbitron'; font-size: 20px; margin-bottom: 15px; }
-        .report-body { text-align: left; font-size: 12px; color: #ccc; line-height: 1.6; }
 
-        .btn-main { width: 100%; padding: 20px; border: none; border-radius: 10px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-demo { background: var(--demo); color: #000; }
-        .btn-stop { background: var(--sell); color: #fff; }
+        /* Painel de Configurações */
+        .settings-panel { background: #111; border: 1px solid var(--neon); border-radius: 15px; padding: 15px; margin-bottom: 15px; display: none; }
+        .settings-panel label { font-size: 10px; color: var(--neon); display: block; margin-top: 8px; font-weight: bold; }
+        .settings-panel input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 5px; font-size: 12px; margin-top: 4px; }
+        .grid-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        #chart { height: 220px; width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid #1a1a1a; }
+
+        /* Sinal Neon Gigante */
+        .signal-box { background: var(--card); border-radius: 15px; padding: 25px; text-align: center; border: 1px solid #1a1a1a; margin-bottom: 15px; }
+        #main-signal { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; line-height: 1; margin: 0; letter-spacing: 5px; }
+        .status-desc { font-size: 10px; color: gold; letter-spacing: 2px; margin-top: 15px; font-weight: bold; }
+
+        /* Dashboard de Cards */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .info-card { background: var(--card); border: 1px solid #1a1a1a; padding: 12px; border-radius: 12px; text-align: center; }
+        .info-card label { display: block; font-size: 9px; color: var(--neon); margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+        .info-card span { font-size: 17px; font-weight: bold; font-family: 'Orbitron'; }
+
+        .btn-action { width: 100%; padding: 18px; border-radius: 12px; border: none; font-family: 'Orbitron'; font-weight: 900; font-size: 16px; cursor: pointer; background: var(--sell); color: #fff; box-shadow: 0 5px 0 #800020; transition: 0.1s; }
+        .btn-action:active { transform: translateY(3px); box-shadow: 0 2px 0 #800020; }
+        .btn-active { background: var(--buy); color: #000; box-shadow: 0 5px 0 #006400; }
+
+        #reportModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; background: #000; border: 2px solid var(--buy); border-radius: 15px; padding: 20px; z-index: 10000; }
+        .color-buy { color: var(--buy); text-shadow: 0 0 20px var(--buy); }
+        .color-sell { color: var(--sell); text-shadow: 0 0 20px var(--sell); }
+        
+        .reset-link { font-size: 9px; color: #333; margin-top: 10px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
 
-<div class="master-box">
-    <div class="bruzi-title">BRUZI TRADING</div>
+<div class="app-container">
+    <div class="bruzi-header" onclick="toggleSettings()">BRUZI TRADING ⚙️</div>
     
-    <div class="account-switcher">
-        <button id="btnDemo" class="acc-btn active-demo">CONTA DEMO</button>
-        <button class="acc-btn">CONTA REAL</button>
+    <div class="settings-panel" id="settings">
+        <div class="grid-settings">
+            <div><label>LIGAR ÀS:</label><input type="time" id="startTime" value="08:00"></div>
+            <div><label>PARAR ÀS:</label><input type="time" id="endTime" value="23:00"></div>
+            <div><label>STOP WIN ($):</label><input type="number" id="stopWin" value="100"></div>
+            <div><label>STOP LOSS ($):</label><input type="number" id="stopLoss" value="50"></div>
+        </div>
+        <button onclick="toggleSettings()" style="width:100%; margin-top:12px; background:var(--neon); border:none; padding:8px; font-weight:bold; border-radius:5px; cursor:pointer;">SALVAR E FECHAR</button>
     </div>
 
-    <div class="dashboard">
-        <div class="card"><small>ENTRADA ($)</small><input type="number" id="stake" value="10" style="width:50px; background:none; border:none; color:#fff; text-align:center;"></div>
-        <div class="card"><small>GALE</small><input type="number" id="gale" value="2.1" style="width:50px; background:none; border:none; color:#fff; text-align:center;"></div>
+    <div id="chart"></div>
+
+    <div class="signal-box">
+        <p id="main-signal" class="color-buy">OFFLINE</p>
+        <div class="status-desc" id="status-desc">AGUARDANDO ATIVAÇÃO</div>
     </div>
 
-    <div id="chart-v22"></div>
-
-    <div class="ai-core">
-        <div id="sn">AGUARDANDO</div>
-        <div id="tm" style="font-size: 18px; color: gold;">02:00</div>
+    <div class="info-grid">
+        <div class="info-card"><label>Score</label><span id="score">0 - 0</span></div>
+        <div class="info-card"><label>Saldo Atual</label><span id="balance">$ 1000.00</span></div>
+        <div class="info-card"><label>Lucro Hoje</label><span id="profit">$ 0.00</span></div>
+        <div class="info-card"><label>Expiração</label><span id="timer">02:00</span></div>
     </div>
 
-    <div class="dashboard">
-        <div class="card"><small>SALDO ATUAL</small><b id="balance">$ 1000.00</b></div>
-        <div class="card"><small>LUCRO SESSÃO</small><b id="profit">$ 0.00</b></div>
-        <div class="card"><small>SCORE (W/L)</small><b id="score">0 - 0</b></div>
-        <div class="card"><small>PROBABILIDADE IA</small><b id="prob">99.1%</b></div>
-    </div>
-
-    <button id="mainBtn" class="btn-main btn-demo" onclick="startIA()">ATIVAR IA (DEMO)</button>
+    <button class="btn-action" id="powerBtn" onclick="initSystem()">ATIVAR SISTEMA</button>
+    <center><div class="reset-link" onclick="resetMemory()">Resetar Memória do Bot</div></center>
 </div>
 
 <div id="reportModal">
-    <div class="report-header">📋 RELATÓRIO PARCIAL</div>
-    <div class="report-body" id="reportContent"></div>
-    <button onclick="document.getElementById('reportModal').style.display='none'" style="margin-top:15px; padding:8px 20px; border-radius:5px; border:none; background:var(--buy); color:#000; font-weight:bold;">FECHAR</button>
+    <div id="reportContent" style="font-size: 13px; line-height: 1.8;"></div>
+    <button onclick="location.reload()" style="width:100%; margin-top:20px; padding:10px; background:var(--buy); border:none; border-radius:5px; font-weight:bold; cursor:pointer;">OK, VOLTAR</button>
 </div>
 
 <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
 
 <script>
-    let isRunning = false, isOperating = false;
-    let metrics = { balance: 1000.00, profit: 0.00, win: 0, loss: 0, currentStake: 10 };
-    let history = []; // Para o relatório
+    // --- SISTEMA DE MEMÓRIA (LocalStorage) ---
+    let metrics = JSON.parse(localStorage.getItem('bruzi_v12_data')) || {
+        win: 0, loss: 0, profit: 0, balance: 1000, history: []
+    };
+
+    function saveToMemory() {
+        localStorage.setItem('bruzi_v12_data', JSON.stringify(metrics));
+    }
+
+    function resetMemory() {
+        if(confirm("Deseja zerar o saldo e placar?")) {
+            localStorage.removeItem('bruzi_v12_data');
+            location.reload();
+        }
+    }
+
+    // --- VARIÁVEIS DE CONTROLE ---
+    let active = false, operating = false;
     let chart, candleSeries;
 
-    function startIA() {
-        if(isRunning) { location.reload(); return; }
-        isRunning = true;
-        metrics.currentStake = parseFloat(document.getElementById('stake').value);
-        document.getElementById('mainBtn').textContent = "DESATIVAR IA";
-        document.getElementById('mainBtn').className = "btn-main btn-stop";
-        
+    function toggleSettings() {
+        const panel = document.getElementById('settings');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function initSystem() {
+        active = true;
+        document.getElementById('powerBtn').textContent = "MODO AUTOMÁTICO ON";
+        document.getElementById('powerBtn').classList.add('btn-active');
+        updateUI();
         initChart();
     }
 
     function initChart() {
-        chart = LightweightCharts.createChart(document.getElementById('chart-v22'), {
+        chart = LightweightCharts.createChart(document.getElementById('chart'), {
             layout: { background: { color: '#000' }, textColor: '#d1d4dc' },
-            grid: { vertLines: { visible: false }, horzLines: { color: '#111' } },
+            grid: { vertLines: { visible: false }, horzLines: { color: '#111' } }
         });
-        // CORREÇÃO: Função correta para velas na v4
-        candleSeries = chart.addCandlestickSeries({
-            upColor: '#00ffa3', downColor: '#ff2e63', borderVisible: false,
-            wickUpColor: '#00ffa3', wickDownColor: '#ff2e63'
-        });
-
+        candleSeries = chart.addCandlestickSeries({ upColor: '#00ffa3', downColor: '#ff2e63', borderVisible: false });
+        
         const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_1m");
         ws.onmessage = (e) => {
             const k = JSON.parse(e.data).k;
             window.lastPrice = parseFloat(k.c);
-            candleSeries.update({
-                time: k.t / 1000, open: parseFloat(k.o), high: parseFloat(k.h), low: parseFloat(k.l), close: parseFloat(k.c)
-            });
+            candleSeries.update({ time: k.t / 1000, open: parseFloat(k.o), high: parseFloat(k.h), low: parseFloat(k.l), close: window.lastPrice });
         };
     }
 
     setInterval(() => {
-        if(!isRunning) return;
+        if(!active) return;
         const now = new Date();
-        const resto = 120 - (((now.getMinutes() * 60) + now.getSeconds()) % 120);
-        document.getElementById('tm').textContent = `${Math.floor(resto/60).toString().padStart(2,'0')}:${(resto%60).toString().padStart(2,'0')}`;
+        const curTime = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+        const start = document.getElementById('startTime').value;
+        const end = document.getElementById('endTime').value;
 
-        if(resto === 118 && !isOperating) runAnalysis();
-        if(resto === 1 && isOperating) checkResult();
+        if (curTime >= start && curTime < end) {
+            const remaining = 120 - (((now.getMinutes() * 60) + now.getSeconds()) % 120);
+            document.getElementById('timer').textContent = `${Math.floor(remaining/60).toString().padStart(2,'0')}:${(remaining%60).toString().padStart(2,'0')}`;
+
+            if(remaining === 118 && !operating) runTrade();
+            if(remaining === 1 && operating) closeTrade();
+        } else {
+            document.getElementById('status-desc').textContent = "FORA DO HORÁRIO";
+            document.getElementById('main-signal').textContent = "PAUSADO";
+        }
     }, 1000);
 
-    function runAnalysis() {
-        isOperating = true;
-        window.entryPrice = window.lastPrice;
-        window.signal = Math.random() > 0.5 ? "COMPRA" : "VENDA";
-        
-        const sn = document.getElementById('sn');
-        sn.textContent = window.signal;
-        sn.className = window.signal === "COMPRA" ? "up" : "down";
+    function runTrade() {
+        operating = true;
+        window.entryVal = window.lastPrice;
+        window.currentSignal = Math.random() > 0.5 ? "COMPRA" : "VENDA";
+        document.getElementById('main-signal').textContent = window.currentSignal;
+        document.getElementById('main-signal').className = window.currentSignal === "COMPRA" ? "color-buy" : "color-sell";
+        document.getElementById('status-desc').textContent = "ORDEM EM ANDAMENTO";
     }
 
-    function checkResult() {
-        const win = (window.signal === "COMPRA") ? window.lastPrice > window.entryPrice : window.lastPrice < window.entryPrice;
-        const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    function closeTrade() {
+        const win = (window.currentSignal === "COMPRA") ? window.lastPrice > window.entryVal : window.lastPrice < window.entryVal;
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const stake = 10; // Valor base
 
         if(win) {
             metrics.win++;
-            const profitVal = metrics.currentStake * 0.9;
-            metrics.profit += profitVal;
-            metrics.balance += profitVal;
-            history.push(`${timeStr} > ✅ WIN`);
-            metrics.currentStake = parseFloat(document.getElementById('stake').value);
+            metrics.profit += stake * 0.9;
+            metrics.balance += stake * 0.9;
+            metrics.history.push(`${time} > ✅ WIN`);
         } else {
             metrics.loss++;
-            metrics.profit -= metrics.currentStake;
-            metrics.balance -= metrics.currentStake;
-            history.push(`${timeStr} > ❌ LOSS`);
-            metrics.currentStake *= parseFloat(document.getElementById('gale').value);
+            metrics.profit -= stake;
+            metrics.balance -= stake;
+            metrics.history.push(`${time} > ❌ LOSS`);
         }
 
         updateUI();
-        isOperating = false;
-
-        // Mostrar relatório a cada 3 operações (Igual à sua foto)
-        if((metrics.win + metrics.loss) % 3 === 0) showReport();
+        saveToMemory();
+        checkStops();
+        operating = false;
     }
 
     function updateUI() {
-        document.getElementById('balance').textContent = "$ " + metrics.balance.toFixed(2);
-        document.getElementById('profit').textContent = "$ " + metrics.profit.toFixed(2);
         document.getElementById('score').textContent = `${metrics.win} - ${metrics.loss}`;
+        document.getElementById('profit').textContent = `$ ${metrics.profit.toFixed(2)}`;
+        document.getElementById('balance').textContent = `$ ${metrics.balance.toFixed(2)}`;
     }
 
-    function showReport() {
+    function checkStops() {
+        const sW = parseFloat(document.getElementById('stopWin').value);
+        const sL = parseFloat(document.getElementById('stopLoss').value);
+
+        if (metrics.profit >= sW) finalize("🚀 META BATIDA (STOP WIN)!");
+        else if (metrics.profit <= (sL * -1)) finalize("📉 LIMITE ATINGIDO (STOP LOSS)!");
+    }
+
+    function finalize(msg) {
+        active = false;
         const modal = document.getElementById('reportModal');
         const content = document.getElementById('reportContent');
         
-        let html = `<b>RELATÓRIO DA SESSÃO</b><br><br>`;
-        history.forEach(line => html += line + "<br>");
-        html += `<br><b>Resultado Diário: $ ${metrics.profit.toFixed(2)}</b>`;
-        html += `<br><b>Banca Atual: $ ${metrics.balance.toFixed(2)}</b>`;
+        let html = `<div style="color:var(--buy); text-align:center; font-family:'Orbitron'; font-weight:bold;">${msg}</div><br>`;
+        html += `<b>RELATÓRIO BRUZI TRADING</b><br><br>`;
+        metrics.history.forEach(h => html += h + "<br>");
+        html += `<br><b style="color:var(--neon)">LUCRO FINAL: $ ${metrics.profit.toFixed(2)}</b>`;
+        html += `<br><b>PLACAR: ${metrics.win}W - ${metrics.loss}L</b>`;
         
         content.innerHTML = html;
         modal.style.display = 'block';
     }
+
+    // Carregar UI inicial
+    updateUI();
 </script>
 </body>
 </html>
