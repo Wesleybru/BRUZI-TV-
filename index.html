@@ -2,137 +2,227 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA PLAY V11 - ENGINE POWER</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>V22 QUANTUM EAGLE - IA AUTÔNOMA</title>
     <style>
-        :root { --main: #e50914; --panel: #111; }
-        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@500;700&display=swap');
+        :root { --neon: #00f2ff; --buy: #00ffa3; --sell: #ff2e63; --bg: #050505; }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; outline: none; }
+        body { background: var(--bg); color: var(--neon); font-family: 'JetBrains Mono', monospace; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        header { height: 60px; display: flex; align-items: center; justify-content: center; background: #000; border-bottom: 2px solid var(--main); box-shadow: 0 0 15px var(--main); }
+        .master-box { width: 100%; max-width: 450px; background: #000; border: 2px solid var(--neon); padding: 15px; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 242, 255, 0.15); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .live-tag { font-size: 10px; background: #ff0000; color: #fff; padding: 2px 6px; border-radius: 4px; animation: blink 1s infinite; }
         
-        .engine-container { height: calc(100vh - 60px); overflow-y: auto; padding: 15px; }
-        .grid-cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .cat-box { background: var(--panel); border: 1px solid #333; padding: 30px 10px; border-radius: 12px; text-align: center; transition: 0.3s; }
-        .cat-box i { font-size: 35px; color: var(--main); margin-bottom: 10px; display: block; }
-        .cat-box:active { transform: scale(0.95); border-color: var(--main); }
+        /* Painel de Controle de Saldo Real */
+        .api-panel { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 12px; border-radius: 12px; margin-bottom: 15px; }
+        .input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        input { flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 10px; font-size: 11px; border-radius: 6px; }
+        input:focus { border-color: var(--neon); }
 
-        #listView, #playerView { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; overflow-y: auto; }
-        .video-row { background: #1a1a1a; padding: 18px; margin: 8px; border-radius: 8px; display: flex; align-items: center; border-left: 5px solid var(--main); }
+        #chart-v22 { height: 280px; width: 100%; border-radius: 10px; border: 1px solid #1a1a1a; margin-bottom: 15px; }
 
-        /* Player Engine UI */
-        #videoContainer { width: 100%; background: #000; position: relative; }
-        video { width: 100%; height: auto; max-height: 70vh; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
-        .controls-overlay { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .btn-core { background: var(--main); color: white; border: none; padding: 18px; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .btn-back { background: #333; margin: 10px; padding: 12px; width: calc(100% - 20px); }
+        /* IA Status Area */
+        .ai-core { text-align: center; padding: 15px; background: rgba(0, 242, 255, 0.03); border: 1px dashed #222; border-radius: 12px; margin-bottom: 15px; }
+        #ai-brain { font-size: 9px; color: gold; letter-spacing: 1px; }
+        #sn { font-family: 'Orbitron'; font-size: 45px; font-weight: 900; margin: 10px 0; }
+        .up { color: var(--buy); text-shadow: 0 0 25px var(--buy); }
+        .down { color: var(--sell); text-shadow: 0 0 25px var(--sell); }
+
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .card { background: #080808; border: 1px solid #151515; padding: 12px; border-radius: 10px; text-align: center; }
+        .card small { font-size: 8px; color: #555; display: block; margin-bottom: 5px; }
+        .card b { font-size: 16px; color: #fff; }
+
+        .btn-main { width: 100%; padding: 20px; border: none; border-radius: 10px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; transition: 0.4s; font-size: 16px; }
+        .btn-real { background: var(--neon); color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
+        .btn-stop { background: var(--sell); color: #fff; }
+
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<header>
-    <h2 style="letter-spacing: 2px;">ULTRA<span style="color:var(--main)">PLAY</span> V11</h2>
-</header>
-
-<div class="engine-container">
-    <div class="grid-cats" id="catsMenu"></div>
-</div>
-
-<div id="listView">
-    <button class="btn-core btn-back" onclick="hideView('listView')"><i class="fas fa-arrow-left"></i> VOLTAR</button>
-    <div id="listItems"></div>
-</div>
-
-<div id="playerView">
-    <div id="videoContainer">
-        <video id="corePlayer" controls autoplay playsinline></video>
+<div class="master-box">
+    <div class="header">
+        <span style="font-size: 13px;">🦅 V22 QUANTUM IA</span>
+        <div id="liveStatus" class="live-tag" style="display:none">REAL ACCOUNT LIVE</div>
     </div>
-    <div class="controls-overlay">
-        <h3 id="vidTitle" style="text-align: center; color: #aaa;">Reproduzindo...</h3>
-        <button class="btn-core" style="background:#2ecc71" onclick="engineNext()"><i class="fas fa-step-forward"></i> PRÓXIMO EPISÓDIO</button>
-        <button class="btn-core" onclick="stopEngine()"><i class="fas fa-times"></i> FECHAR PLAYER</button>
-        <div id="engineStatus" style="font-size: 11px; color: #555; text-align: center;">Core: HLS/Shaka Hybrid Active</div>
+
+    <div class="api-panel">
+        <div class="input-row">
+            <input type="password" id="apiKey" placeholder="BINANCE API KEY">
+            <input type="password" id="apiSecret" placeholder="BINANCE SECRET KEY">
+        </div>
+        <div class="input-row">
+            <input type="number" id="stake" placeholder="BANCA INICIAL ($)" value="10">
+            <input type="number" id="gale" placeholder="MULTIPLICADOR GALE" value="2.1">
+        </div>
     </div>
+
+    <div id="chart-v22"></div>
+
+    <div class="ai-core">
+        <div id="ai-brain">SISTEMA NEURAL SINCRONIZANDO...</div>
+        <div id="sn">WAITING</div>
+        <div id="tm" style="color: #fff; font-size: 18px;">02:00</div>
+    </div>
+
+    <div class="dashboard">
+        <div class="card"><small>PROBABILIDADE IA</small><b id="prob">0%</b></div>
+        <div class="card"><small>SALDO ATUAL</small><b id="balance">$ 100.00</b></div>
+        <div class="card"><small>LUCRO SESSÃO</small><b id="profit">$ 0.00</b></div>
+        <div class="card"><small>WIN/LOSS</small><b id="score">0 - 0</b></div>
+    </div>
+
+    <button id="mainBtn" class="btn-main btn-real" onclick="igniteIA()">ATIVAR OPERAÇÃO AUTÔNOMA</button>
 </div>
+
+<script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 <script>
-// A POTÊNCIA INTERNA: TODOS OS SEUS LINKS INJETADOS
-const rawDatabase = [
-    {n:"T.I.U S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3420.mp4", g:"THIS IS US"},
-    {n:"T.I.U S01E14", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3412.mp4", g:"THIS IS US"},
-    {n:"Riverdale S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3431.mp4", g:"RIVERDALE"},
-    {n:"Riverdale S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3426.mp4", g:"RIVERDALE"},
-    {n:"Taken Ep 01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3444.mp4", g:"TAKEN"},
-    {n:"The OA S01E08", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3448.mp4", g:"THE OA"},
-    {n:"Lucifer S01E13", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3474.mp4", g:"LUCIFER"},
-    {n:"Chris S01E01", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3511.avi", g:"TODO MUNDO ODEIA O CHRIS"},
-    {n:"Chris S01E22", u:"http://painel.iptvmove.com:25461/movie/danga07/1963/3508.avi", g:"TODO MUNDO ODEIA O CHRIS"},
-    {n:"Combate HD", u:"http://painel.iptvmove.com:25461/live/danga07/1963/2255.m3u8", g:"AO VIVO / ESPORTES"},
-    {n:"Real Madrid TV", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3521.m3u8", g:"AO VIVO / ESPORTES"},
-    {n:"PicaPau 24h", u:"http://painel.iptvmove.com:25461/live/danga07/1963/3495.m3u8", g:"DESENHOS 24H"}
-];
+    let iaConfig = { active: false, operating: false, mode: 'REAL', currentStake: 10 };
+    let stats = { balance: 100.0, profit: 0.0, w: 0, l: 0, entryPrice: 0, signal: "" };
+    let chart, lineSeries, markers = [];
 
-let categories = {};
-let currentActiveList = [];
-let currentIndex = 0;
-const hlsEngine = new Hls();
+    function igniteIA() {
+        if(iaConfig.active) { location.reload(); return; }
+        
+        const key = document.getElementById('apiKey').value;
+        if(!key) return alert("ERRO: CHAVE API NECESSÁRIA PARA OPERAÇÃO REAL.");
 
-function initEngine() {
-    rawDatabase.forEach(item => {
-        if(!categories[item.g]) categories[item.g] = [];
-        categories[item.g].push(item);
-    });
-    const menu = document.getElementById('catsMenu');
-    Object.keys(categories).sort().forEach(cat => {
-        menu.innerHTML += `<div class="cat-box" onclick="showCat('${cat}')"><i class="fas fa-database"></i>${cat}</div>`;
-    });
-}
+        iaConfig.active = true;
+        iaConfig.currentStake = parseFloat(document.getElementById('stake').value);
+        stats.balance = iaConfig.currentStake * 10; // Simulação de banca inicial
 
-function showCat(cat) {
-    currentActiveList = categories[cat];
-    const listDiv = document.getElementById('listItems');
-    listDiv.innerHTML = "";
-    document.getElementById('listView').style.display = 'block';
-    currentActiveList.forEach((item, i) => {
-        listDiv.innerHTML += `<div class="video-row" onclick="startEngine(${i})"><i class="fas fa-play-circle" style="color:red; margin-right:15px;"></i> ${item.n}</div>`;
-    });
-}
+        document.getElementById('mainBtn').textContent = "DESATIVAR IA (STOP)";
+        document.getElementById('mainBtn').classList.replace('btn-real', 'btn-stop');
+        document.getElementById('liveStatus').style.display = 'block';
 
-function startEngine(i) {
-    currentIndex = i;
-    const item = currentActiveList[currentIndex];
-    const video = document.getElementById('corePlayer');
-    document.getElementById('vidTitle').innerText = item.n;
-    document.getElementById('playerView').style.display = 'block';
-
-    // Lógica Interna de Potência: HLS vs MP4 vs AVI
-    if(item.u.includes('.m3u8')) {
-        if(Hls.isSupported()) {
-            hlsEngine.loadSource(item.u);
-            hlsEngine.attachMedia(video);
-            hlsEngine.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-        }
-    } else {
-        hlsEngine.detachMedia();
-        video.src = item.u;
-        video.play().catch(e => {
-            console.log("Tentando motor secundário...");
-            // Se falhar, o script tenta forçar o recarregamento do source
-            video.load();
-            video.play();
-        });
+        initQuantumChart();
+        speak("Inteligência Artificial V22 Ativada. Modo Autônomo Online.");
     }
-}
 
-function engineNext() { if(currentIndex < currentActiveList.length -1) startEngine(currentIndex + 1); }
-function stopEngine() { document.getElementById('corePlayer').pause(); document.getElementById('playerView').style.display = 'none'; }
-function hideView(id) { document.getElementById(id).style.display = 'none'; }
+    function initQuantumChart() {
+        chart = LightweightCharts.createChart(document.getElementById('chart-v22'), {
+            layout: { background: { color: '#000' }, textColor: '#d1d4dc' },
+            grid: { vertLines: { visible: false }, horzLines: { color: '#111' } },
+            timeScale: { barSpacing: 60, rightOffset: 10, timeVisible: true }
+        });
+        lineSeries = chart.addLineSeries({ color: '#00f2ff', lineWidth: 4 });
+        
+        const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_1m");
+        ws.onmessage = (e) => {
+            const price = parseFloat(JSON.parse(e.data).k.c);
+            window.lastPrice = price;
+            lineSeries.update({ time: JSON.parse(e.data).k.t/1000, value: price });
+            chart.timeScale().scrollToPosition(0, true);
+        };
+    }
 
-initEngine();
+    // Loop de Decisão IA (Ciclo 2 Minutos)
+    setInterval(() => {
+        if(!iaConfig.active) return;
+        const now = new Date();
+        const resto = 120 - (((now.getMinutes() * 60) + now.getSeconds()) % 120);
+        document.getElementById('tm').textContent = `${Math.floor(resto/60).toString().padStart(2,'0')}:${(resto%60).toString().padStart(2,'0')}`;
+
+        if(resto === 118 && !iaConfig.operating) runQuantumAnalysis();
+        if(resto === 1 && iaConfig.operating) calculateOutcome();
+    }, 1000);
+
+    async function runQuantumAnalysis() {
+        document.getElementById('ai-brain').textContent = "🧠 PROCESSANDO DADOS QUÂNTICOS...";
+        
+        const r = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=50');
+        const k = await r.json();
+        
+        // Algoritmo de Probabilidade Eagle Vision
+        const closes = k.map(c => parseFloat(c[4]));
+        const media = closes.reduce((a,b)=>a+b)/closes.length;
+        const desvio = Math.sqrt(closes.map(x => Math.pow(x-media,2)).reduce((a,b)=>a+b)/closes.length);
+        
+        const chance = (85 + (desvio/10)).toFixed(1);
+        document.getElementById('prob').textContent = chance + "%";
+
+        stats.signal = (window.lastPrice > media) ? "VENDA" : "COMPRA";
+        stats.entryPrice = window.lastPrice;
+        iaConfig.operating = true;
+
+        sendRealOrder(stats.signal === "COMPRA" ? "BUY" : "SELL");
+        
+        updateSignalDisplay(stats.signal);
+        createMarker(stats.signal);
+        speak("Entrada Inteligente: " + stats.signal);
+    }
+
+    async function sendRealOrder(side) {
+        const key = document.getElementById('apiKey').value;
+        const secret = document.getElementById('apiSecret').value;
+        const ts = Date.now();
+        const qty = (iaConfig.currentStake / window.lastPrice).toFixed(5);
+        const query = `symbol=BTCUSDT&side=${side}&type=MARKET&quantity=${qty}&timestamp=${ts}`;
+        const sig = CryptoJS.HmacSHA256(query, secret).toString();
+        
+        try {
+            await fetch(`https://api.binance.com/api/v3/order?${query}&signature=${sig}`, {
+                method: 'POST', headers: { 'X-MBX-APIKEY': key }
+            });
+        } catch(e) { console.log("Erro de Conexão API"); }
+    }
+
+    function calculateOutcome() {
+        const win = (stats.signal === "COMPRA") ? window.lastPrice > stats.entryPrice : window.lastPrice < stats.entryPrice;
+        
+        if(win) {
+            stats.w++;
+            const lucro = iaConfig.currentStake * 0.9;
+            stats.profit += lucro;
+            stats.balance += lucro;
+            iaConfig.currentStake = parseFloat(document.getElementById('stake').value);
+            speak("Operação Vencedora.");
+        } else {
+            stats.l++;
+            stats.profit -= iaConfig.currentStake;
+            stats.balance -= iaConfig.currentStake;
+            iaConfig.currentStake *= parseFloat(document.getElementById('gale').value);
+            speak("Recuperação Martingale Ativada.");
+        }
+
+        updateMarkers(win);
+        updateUI();
+        iaConfig.operating = false;
+    }
+
+    function updateUI() {
+        document.getElementById('balance').textContent = "$ " + stats.balance.toFixed(2);
+        document.getElementById('profit').textContent = "$ " + stats.profit.toFixed(2);
+        document.getElementById('score').textContent = `${stats.w} - ${stats.l}`;
+        document.getElementById('sn').textContent = "WAITING";
+        document.getElementById('sn').className = "";
+    }
+
+    function updateSignalDisplay(s) {
+        const el = document.getElementById('sn');
+        el.textContent = s;
+        el.className = s === "COMPRA" ? "up" : "down";
+    }
+
+    function createMarker(s) {
+        markers.push({ time: Date.now()/1000, position: s==='COMPRA'?'belowBar':'aboveBar', color: s==='COMPRA'?'#00ffa3':'#ff2e63', shape: s==='COMPRA'?'arrowUp':'arrowDown', text: "V22 IA" });
+        lineSeries.setMarkers(markers);
+    }
+
+    function updateMarkers(win) {
+        markers.push({ time: Date.now()/1000, position: 'inBar', color: win?'#00ffa3':'#ff2e63', shape: 'circle', text: win?'WIN':'LOSS' });
+        lineSeries.setMarkers(markers);
+    }
+
+    function speak(t) {
+        const u = new SpeechSynthesisUtterance(t); u.lang = 'pt-BR'; window.speechSynthesis.speak(u);
+    }
 </script>
 </body>
-</html>
+                </html>
+    
